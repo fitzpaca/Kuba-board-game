@@ -4,38 +4,44 @@
 #       called Kuba.
 
 class KubaGame:
-    """represents the playing board"""
+    """represents the Kuba game"""
     def __init__(self, player1, player2):
         """initializes variables for the Board"""
-        self._player1 = Player(player1)
-        self._player2 = Player(player2)
-
-        # initialize the board to have 7 rows of X's
-        self._board = []
-        for row in range(7):
-            self._board.append(['X', 'X', 'X', 'X', 'X', 'X', 'X'])
+        self._player1 = Player(player1[0], player1[1])
+        self._player2 = Player(player2[0], player2[1])
+        self._board = GameBoard()
 
     def display_board(self):
-        """displays the Board row by row"""
-        for row in self._board:
-            print(row)
+        """displays the """
+        print(self._board.get_board())
 
-    def make_move(self, player_name, coordinates):
-        self._board[coordinates[0]][coordinates[1]] =
+
+
+
+class GameBoard:
+    """represents the playing board"""
+    def __init__(self):
+        # initialize the board to start positions
+        self._game_board = []
+        self._game_board.append(['B', 'B', ' ', ' ', ' ', 'W', 'W'])     # initialize row 0...
+        self._game_board.append(['B', 'B', ' ', 'R', ' ', 'W', 'W'])
+        self._game_board.append([' ', ' ', 'R', 'R', 'R', ' ', ' '])
+        self._game_board.append([' ', 'R', 'R', 'R', 'R', 'R', ' '])
+        self._game_board.append([' ', ' ', 'R', 'R', 'R', ' ', ' '])
+        self._game_board.append(['W', 'W', ' ', 'R', ' ', 'B', 'B'])
+        self._game_board.append(['W', 'W', ' ', ' ', ' ', 'B', 'B'])     # ...initialize row 6
+
+    def get_board(self):
+        """returns the game board"""
+        return self._game_board
+
 
 class Player:
-    """represents a player in the KubaGame"""
+    """represents a player with a name and marble color"""
     def __init__(self, name, color):
+        """initializes members for Player class"""
         self._name = name
         self._color = color
-
-    def get_color(self):
-        return self._color
-
-    def get_name(self):
-        return self._name
-
-
 
 
 class Marble:
@@ -49,7 +55,6 @@ class Marble:
         return self._color
 
 
-
 class RedMarble(Marble):
     """represents a red marble with all characteristics of a Marble"""
     def _init__(self):
@@ -57,11 +62,8 @@ class RedMarble(Marble):
         super().__init__(color)
 
 
-
 game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
-# game.make_move('PlayerA', (6,5))
-# game.display_board()
-
+game.display_board()
 
 
 
