@@ -12,7 +12,7 @@ class KubaGame:
         self._board = GameBoard()
         self._turn = None
         self._winner = None
-        self._marble_count = (8, 8, 13)     # (W, B, R)
+        self._marble_count = ()     # (W, B, R)
 
     def display_board(self):
         """displays the game board"""
@@ -30,7 +30,7 @@ class KubaGame:
 
     def get_marble_count(self):
         """returns the marble count as a tuple (White, Black, Red)"""
-        return self._marble_count
+        return self._board.get_marble_count()
 
     def get_captured(self, name):
         """returns the number of captured red marbles by the given player name"""
@@ -50,6 +50,12 @@ class KubaGame:
 
     def make_move(self, name, position, direction):
         """makes a move on the game board"""
+        # data validation for direction
+        try:
+            self.valid_direction_check(direction)
+        except InvalidDirectionError:
+            print("Invalid direction! Must be 'F', 'B', 'L', or 'R'")
+
         # make the move for the current player
         current_player = self.get_player(name)
         self._board.set_marble(position[0], position[1], current_player.get_color())
@@ -72,6 +78,17 @@ class KubaGame:
             return self._player2
         if name == self._player2.get_name():
             return self._player1
+
+    # ------ error handling for KubaGame --------------------------
+    def valid_direction_check(self, direction):
+        if direction == 'F' or direction == 'B' or direction == 'L' or direction == 'R':
+            print("valid direction!")
+        else:
+            raise InvalidDirectionError
+
+
+    # ------ error handling for KubaGame --------------------------
+
 
 class GameBoard:
     """represents the playing board"""
@@ -97,6 +114,22 @@ class GameBoard:
     def get_tile(self, row, col):
         """returns the status of a tile"""
         return self._board[row][col]
+
+    def get_marble_count(self):
+        """tallies the count of marbles on the board by color"""
+        red_count = 0
+        black_count = 0
+        white_count = 0
+        for row in self._board:
+            for tile in row:
+                if tile == 'R':
+                    red_count += 1
+                elif tile == 'B':
+                    black_count += 1
+                elif tile == 'W':
+                    white_count += 1
+        return (white_count, black_count, red_count)
+
 
 
 class Player:
@@ -124,12 +157,21 @@ class Player:
         self._captured += 1
 
 
+class InvalidDirectionError(Exception):
+    """exception for invalid direction input"""
+    pass
+
+
 
 
 game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
-game.make_move('PlayerA', (0,3), 'F')
+game.make_move('PlayerA', (0,3), 'x')
+# game.make_move('PlayerB', (2,6), 'F')
+# game.make_move('PlayerA', (0,4), 'F')
+
 game.display_board()
-print(game.get_captured('PlayerA'))
+print(game.get_current_turn())
+print(game.get_marble_count())
 
 
 
