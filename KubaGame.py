@@ -16,8 +16,14 @@ class KubaGame:
 
     def display_board(self):
         """displays the game board"""
+
+        # display board by printing each row as a string w tiles separated by spaces
         for row in self._board.get_board():
-            print(row)
+            print("  ".join(x for x in row))
+
+        # display board by printing each row as a list
+        # for row in self._board.get_board():
+        #     print(row)
 
     def get_current_turn(self):
         """Returns the players name whose turn it is.
@@ -51,10 +57,11 @@ class KubaGame:
     def make_move(self, name, position, direction):
         """makes a move on the game board"""
         # if the parameters are validated
-        if self.make_move_valid(name, position, direction):
+        if self.valid_make_move(name, position, direction):
             # make the move for the current player
             current_player = self.get_player(name)
-            self._board.set_marble(position[0], position[1], current_player.get_color())
+            self._board.push_marble(position, current_player.get_color(), direction)
+            # self._board.set_marble(position[0], position[1], current_player.get_color())
 
             # update the current turn to the other player
             other_player = self.get_other_player(name)
@@ -78,6 +85,15 @@ class KubaGame:
             return self._player1
 
     # ------ start error handling for KubaGame --------------------------
+    def marble_color_check(self, name, position):
+        """data validation for tile color player is attempting to move"""
+        marble_on_tile = self.get_marble(position)
+        player_attempting = self.get_player(name).get_color()
+        if player_attempting == marble_on_tile:
+            pass
+        else:
+            raise InvalidMoveError
+
     def direction_check(self, direction):
         """data validation for make_move direction input"""
         if direction == 'F' or direction == 'B' or direction == 'L' or direction == 'R':
@@ -106,20 +122,13 @@ class KubaGame:
         else:
             raise InvalidMoveError
 
-    def make_move_valid(self, name, position, direction):
+    def valid_make_move(self, name, position, direction):
         """handles data validation for make_move function"""
         # data validation for game already won
         try:
             self.winner_check()
         except InvalidMoveError:
             print("The game has already been won!")
-            return False
-
-        # data validation for current turn
-        try:
-            self.turn_check(name)
-        except InvalidMoveError:
-            print("It is not your turn!")
             return False
 
         # data validation for position
@@ -136,6 +145,24 @@ class KubaGame:
             print("Invalid direction! Must be 'F', 'B', 'L', or 'R'")
             return False
 
+        # data validation for current turn
+        try:
+            self.turn_check(name)
+        except InvalidMoveError:
+            print("It is not your turn!")
+            return False
+
+        # data validation for marble color
+        try:
+            self.marble_color_check(name, position)
+        except InvalidMoveError:
+            print("You can only push your own marbles!")
+            return False
+
+
+
+
+
         # otherwise, input is validated
         return True
 
@@ -147,13 +174,14 @@ class GameBoard:
     def __init__(self):
         # initialize the board to start positions
         self._board = []
-        self._board.append(['B', 'B', ' ', ' ', ' ', 'W', 'W'])     # initialize row 0...
-        self._board.append(['B', 'B', ' ', 'R', ' ', 'W', 'W'])
-        self._board.append([' ', ' ', 'R', 'R', 'R', ' ', ' '])
-        self._board.append([' ', 'R', 'R', 'R', 'R', 'R', ' '])
-        self._board.append([' ', ' ', 'R', 'R', 'R', ' ', ' '])
-        self._board.append(['W', 'W', ' ', 'R', ' ', 'B', 'B'])
-        self._board.append(['W', 'W', ' ', ' ', ' ', 'B', 'B'])     # ...initialize row 6
+        self._board.append(['B', 'B', ' ', ' ', ' ', 'W', 'W', '|'])     # initialize row 0...
+        self._board.append(['B', 'B', ' ', 'R', ' ', 'W', 'W', '|'])
+        self._board.append([' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
+        self._board.append([' ', 'R', 'R', 'R', 'R', 'R', ' ', '|'])
+        self._board.append([' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
+        self._board.append(['W', 'W', ' ', 'R', ' ', 'B', 'B', '|'])
+        self._board.append(['W', 'W', ' ', ' ', ' ', 'B', 'B', '|'])     # ...initialize row 6
+        self._board.append(['-', '-', '-', '-', '-', '-', '-', '-'])
 
     def get_board(self):
         """returns the game board"""
@@ -162,6 +190,17 @@ class GameBoard:
     def set_marble(self, row, col, color):
         """places a marble on a tile and updates game board"""
         self._board[row][col] = color
+
+    def push_marble(self, position, color, direction):
+        # push the marble in the given direction
+        # (if we want to push a marble left, then the tile to the right must be empty (empty or right edge)
+        if direction == 'L':
+            self._board[position[0]][position[1] - 1] = color
+
+        # make the given tile empty
+        self._board[position[0]][position[1]] = ' '
+
+
 
     def get_tile(self, row, col):
         """returns the status of a tile"""
@@ -217,13 +256,14 @@ class InvalidMoveError(Exception):
 
 
 game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
-game.make_move('PlayerB', (0,3), 'B')
-game.make_move('PlayerA', (2,6), 'x')
-game.make_move('PlayerA', (0,4), 'R')
-game.set_winner("Carl")
-game.make_move('PlayerB', (0,3), 'B')
-game.make_move('PlayerB', (2,6), 'L')
-game.make_move('PlayerB', (0,4), 'R')
+# game.make_move('PlayerB', (0,0), 'B')
+# game.make_move('PlayerA', (2,6), 'x')
+# game.make_move('PlayerA', (0,6), 'F')
+# game.make_move('PlayerB', (0,6), 'B')
+# game.make_move('PlayerB', (2,6), 'L')
+# game.set_winner("Carl")
+game.make_move('PlayerA', (0, 5), 'L')
+game.make_move('PlayerB', (6, 5), 'L')
 
 game.display_board()
 
