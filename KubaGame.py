@@ -46,28 +46,42 @@ class KubaGame:
         """returns the winner of the game. returns None if game is not over."""
         return self._winner
 
-    def set_winner(self, name):
+    def check_for_winner(self):
+        """checks if the game has been won by a player capturing 7 reds.
+        Returns True if a player has won the game. False otherwise."""
+        if self._player1.get_captured() == 7:
+            self.set_winner(self._player1.get_name())
+            print(self._player1.get_name(), "captured 7 reds and won the game!")
+
+        if self._player2.get_captured() == 7:
+            self.set_winner(self._player2.get_name())
+            print(self._player2.get_name(), "captured 7 reds and won the game!")
+
+    def set_winner(self,  name):
         """sets the winner of the game to a player's name"""
         self._winner = name
 
-    def get_marble(self, position):
+    def get_marble(self, board_pos):
         """returns the color of marble at a given position. returns 'X' if tile is empty."""
-        return self._board.get_tile(position)
+        return self._board.get_tile(board_pos)
 
-    def make_move(self, name, position, direction):
+    def make_move(self, playername, position, direction):
         """makes a move on the game board"""
+        # convert input position to actual game board position
+        coordinates = (position[0] + 1, position[1] + 1)
+
         # if the parameters are validated
-        if self.valid_make_move(name, position, direction):
+        if self.valid_make_move(playername, coordinates, direction):
             # make the move for the current player
-            current_player = self.get_player(name)
-            self._board.push_marble(position, current_player.get_color(), direction)
-            # self._board.set_marble(position[0], position[1], current_player.get_color())
+            current_player = self.get_player(playername)
+            self._board.push_marble(coordinates, current_player.get_color(), direction)
 
             # update the current turn to the other player
-            other_player = self.get_other_player(name)
+            other_player = self.get_other_player(playername)
             self.set_current_turn(other_player.get_name())
 
-        # check for game winner after every valid turn
+            # check for game winner after every valid turn
+            self.check_for_winner()     # updates self._winner and prints win announcement
 
 
     def get_player(self, name):
@@ -94,16 +108,18 @@ class KubaGame:
         else:
             raise InvalidMoveError
 
-    def direction_check(self, direction):
+    @staticmethod
+    def direction_check(direction):
         """data validation for make_move direction input"""
         if direction == 'F' or direction == 'B' or direction == 'L' or direction == 'R':
             pass
         else:
             raise InvalidMoveError
 
-    def position_check(self, position):
+    @staticmethod
+    def position_check(board_pos):
         """data validation for make_move position input"""
-        if position[0] in range(7) and position[1] in range(7):
+        if board_pos[0] in range(1, 8) and board_pos[1] in range(1, 8):
             pass
         else:
             raise InvalidMoveError
@@ -174,22 +190,19 @@ class GameBoard:
     def __init__(self):
         # initialize the board to start positions
         self._board = []
-        self._board.append(['B', 'B', ' ', ' ', ' ', 'W', 'W', '|'])     # initialize row 0...
-        self._board.append(['B', 'B', ' ', 'R', ' ', 'W', 'W', '|'])
-        self._board.append([' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
-        self._board.append([' ', 'R', 'R', 'R', 'R', 'R', ' ', '|'])
-        self._board.append([' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
-        self._board.append(['W', 'W', ' ', 'R', ' ', 'B', 'B', '|'])
-        self._board.append(['W', 'W', ' ', ' ', ' ', 'B', 'B', '|'])     # ...initialize row 6
-        self._board.append(['-', '-', '-', '-', '-', '-', '-', '-'])
+        self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
+        self._board.append(['|', 'B', 'B', ' ', ' ', ' ', 'W', 'W', '|'])     # initialize row 0...
+        self._board.append(['|', 'B', 'B', ' ', 'R', ' ', 'W', 'W', '|'])
+        self._board.append(['|', ' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
+        self._board.append(['|', ' ', 'R', 'R', 'R', 'R', 'R', ' ', '|'])
+        self._board.append(['|', ' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
+        self._board.append(['|', 'W', 'W', ' ', 'R', ' ', 'B', 'B', '|'])
+        self._board.append(['|', 'W', 'W', ' ', ' ', ' ', 'B', 'B', '|'])     # ...initialize row 6
+        self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
 
     def get_board(self):
         """returns the game board"""
         return self._board
-
-    def set_marble(self, row, col, color):
-        """places a marble on a tile and updates game board"""
-        self._board[row][col] = color
 
     def push_marble(self, position, color, direction):
         # push the marble in the given direction
@@ -211,15 +224,15 @@ class GameBoard:
         red_count = 0
         black_count = 0
         white_count = 0
-        for row in self._board:
-            for tile in row:
+        for row in self._board[1:8]:                    # only count marbles on the playing board
+            for tile in row[1:8]:
                 if tile == 'R':
                     red_count += 1
                 elif tile == 'B':
                     black_count += 1
                 elif tile == 'W':
                     white_count += 1
-        return (white_count, black_count, red_count)
+        return white_count, black_count, red_count      # returns a tuple of these values
 
 
 
@@ -261,10 +274,15 @@ game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
 # game.make_move('PlayerA', (0,6), 'F')
 # game.make_move('PlayerB', (0,6), 'B')
 # game.make_move('PlayerB', (2,6), 'L')
-game.set_winner("Carl")
-game.make_move('PlayerA', (0, 5), 'L')
-game.make_move('PlayerB', (6, 5), 'L')
+# game.set_winner("Carl")
+# game.make_move('PlayerA', (0, 5), 'L')
+# game.make_move('PlayerB', (6, 5), 'L')
 game.display_board()
+print(game.get_marble_count())
+
+
+
+
 
 
 
