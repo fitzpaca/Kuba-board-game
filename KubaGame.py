@@ -50,19 +50,17 @@ class KubaGame:
 
     def make_move(self, name, position, direction):
         """makes a move on the game board"""
-        # data validation for direction
-        try:
-            self.valid_direction_check(direction)
-        except InvalidDirectionError:
-            print("Invalid direction! Must be 'F', 'B', 'L', or 'R'")
+        # if the parameters are validated
+        if self.make_move_valid(name, position, direction):
+            # make the move for the current player
+            current_player = self.get_player(name)
+            self._board.set_marble(position[0], position[1], current_player.get_color())
 
-        # make the move for the current player
-        current_player = self.get_player(name)
-        self._board.set_marble(position[0], position[1], current_player.get_color())
+            # update the current turn to the other player
+            other_player = self.get_other_player(name)
+            self.set_current_turn(other_player.get_name())
 
-        # update the current turn to the other player
-        other_player = self.get_other_player(name)
-        self.set_current_turn(other_player.get_name())
+        # check for game winner after every valid turn
 
 
     def get_player(self, name):
@@ -79,15 +77,66 @@ class KubaGame:
         if name == self._player2.get_name():
             return self._player1
 
-    # ------ error handling for KubaGame --------------------------
-    def valid_direction_check(self, direction):
+    # ------ start error handling for KubaGame --------------------------
+    def direction_check(self, direction):
+        """data validation for make_move direction input"""
         if direction == 'F' or direction == 'B' or direction == 'L' or direction == 'R':
-            print("valid direction!")
+            pass
         else:
-            raise InvalidDirectionError
+            raise InvalidMoveError
 
+    def position_check(self, position):
+        """data validation for make_move position input"""
+        if position[0] in range(7) and position[1] in range(7):
+            pass
+        else:
+            raise InvalidMoveError
 
-    # ------ error handling for KubaGame --------------------------
+    def turn_check(self, name):
+        """data validation to make sure that it is the player's turn who is attempting the move"""
+        if name == self.get_current_turn() or self.get_current_turn() is None:
+            pass
+        else:
+            raise InvalidMoveError
+
+    def winner_check(self):
+        """data validation that the game has not been won already"""
+        if self._winner is None:
+            pass
+        else:
+            raise InvalidMoveError
+
+    def make_move_valid(self, name, position, direction):
+        """handles data validation for make_move function"""
+        # data validation for game already won
+        try:
+            self.winner_check()
+        except:
+            print("The game has already been won!")
+            return False
+
+        # data validation for current turn
+        try:
+            self.turn_check(name)
+        except InvalidMoveError:
+            print("It is not your turn!")
+            return False
+
+        # data validation for position
+        try:
+            self.position_check(position)
+        except InvalidMoveError:
+            print("Invalid position input!")
+            return False
+
+        # data validation for direction
+        try:
+            self.direction_check(direction)
+        except InvalidMoveError:
+            print("Invalid direction! Must be 'F', 'B', 'L', or 'R'")
+            return False
+
+    # ------ end error handling for KubaGame --------------------------
 
 
 class GameBoard:
@@ -157,7 +206,7 @@ class Player:
         self._captured += 1
 
 
-class InvalidDirectionError(Exception):
+class InvalidMoveError(Exception):
     """exception for invalid direction input"""
     pass
 
@@ -165,13 +214,16 @@ class InvalidDirectionError(Exception):
 
 
 game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
-game.make_move('PlayerA', (0,3), 'x')
-# game.make_move('PlayerB', (2,6), 'F')
-# game.make_move('PlayerA', (0,4), 'F')
+game.make_move('PlayerB', (0,3), 'B')
+game.make_move('PlayerA', (2,6), 'L')
+game.make_move('PlayerB', (0,4), 'R')
+game.set_winner("Carl")
+game.make_move('PlayerB', (0,3), 'B')
+game.make_move('PlayerB', (2,6), 'L')
+game.make_move('PlayerB', (0,4), 'R')
 
 game.display_board()
-print(game.get_current_turn())
-print(game.get_marble_count())
+
 
 
 
