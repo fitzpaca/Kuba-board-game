@@ -41,9 +41,11 @@ class KubaGame:
         """returns the winner of the game. returns None if game is not over."""
         return self._winner
 
-    def check_for_winner(self):
-        """checks if the game has been won by a player capturing 7 reds.
+    def check_for_winner(self, name):
+        """checks if the game has been won by a player capturing 7 reds or 7 opposing marbles.
         Returns True if a player has won the game. False otherwise."""
+        # need to add functionality for a player winning the game by capturing all of the opponent's marbles
+        # also need to consider that a player has lost the game if they cannot make a legal move
         if self._player1.get_captured() == 7:
             self.set_winner(self._player1.get_name())
             print(self._player1.get_name(), "captured 7 reds and won the game!")
@@ -80,7 +82,7 @@ class KubaGame:
 
 
             # check for game winner after every valid turn
-            self.check_for_winner()     # updates self._winner and prints win announcement
+            self.check_for_winner(playername)     # updates self._winner and prints win announcement
 
 
 
