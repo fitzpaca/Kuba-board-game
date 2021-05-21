@@ -111,7 +111,7 @@ class KubaGame:
         # data validation for game already won
         try:
             self.winner_check()
-        except:
+        except InvalidMoveError:
             print("The game has already been won!")
             return False
 
@@ -135,6 +135,9 @@ class KubaGame:
         except InvalidMoveError:
             print("Invalid direction! Must be 'F', 'B', 'L', or 'R'")
             return False
+
+        # otherwise, input is validated
+        return True
 
     # ------ end error handling for KubaGame --------------------------
 
@@ -215,8 +218,8 @@ class InvalidMoveError(Exception):
 
 game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
 game.make_move('PlayerB', (0,3), 'B')
-game.make_move('PlayerA', (2,6), 'L')
-game.make_move('PlayerB', (0,4), 'R')
+game.make_move('PlayerA', (2,6), 'x')
+game.make_move('PlayerA', (0,4), 'R')
 game.set_winner("Carl")
 game.make_move('PlayerB', (0,3), 'B')
 game.make_move('PlayerB', (2,6), 'L')
