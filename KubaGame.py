@@ -52,7 +52,7 @@ class KubaGame:
 
     def get_marble(self, position):
         """returns the color of marble at a given position. returns 'X' if tile is empty."""
-        return self._board.get_tile(position[0], position[1])
+        return self._board.get_tile(position)
 
     def make_move(self, name, position, direction):
         """makes a move on the game board"""
@@ -202,9 +202,9 @@ class GameBoard:
 
 
 
-    def get_tile(self, row, col):
+    def get_tile(self, position):
         """returns the status of a tile"""
-        return self._board[row][col]
+        return self._board[position[0]][position[1]]
 
     def get_marble_count(self):
         """tallies the count of marbles on the board by color"""
@@ -261,10 +261,9 @@ game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
 # game.make_move('PlayerA', (0,6), 'F')
 # game.make_move('PlayerB', (0,6), 'B')
 # game.make_move('PlayerB', (2,6), 'L')
-# game.set_winner("Carl")
+game.set_winner("Carl")
 game.make_move('PlayerA', (0, 5), 'L')
 game.make_move('PlayerB', (6, 5), 'L')
-
 game.display_board()
 
 
