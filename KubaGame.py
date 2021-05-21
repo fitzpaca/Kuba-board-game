@@ -16,14 +16,9 @@ class KubaGame:
 
     def display_board(self):
         """displays the game board"""
-
         # display board by printing each row as a string w tiles separated by spaces
         for row in self._board.get_board():
             print("  ".join(x for x in row))
-
-        # display board by printing each row as a list
-        # for row in self._board.get_board():
-        #     print(row)
 
     def get_current_turn(self):
         """Returns the players name whose turn it is.
@@ -65,24 +60,32 @@ class KubaGame:
         """returns the color of marble at a given position. returns 'X' if tile is empty."""
         return self._board.get_tile(board_pos)
 
-    def make_move(self, playername, position, direction):
+    def make_move(self, playername, coordinates, direction):
         """makes a move on the game board"""
         # convert input position to actual game board position
-        coordinates = (position[0] + 1, position[1] + 1)
+        board_pos = (coordinates[0] + 1, coordinates[1] + 1)
 
         # if the parameters are validated
-        if self.valid_make_move(playername, coordinates, direction):
+        if self.valid_make_move(playername, board_pos, direction):
             # make the move for the current player
             current_player = self.get_player(playername)
-            self._board.push_marble(coordinates, current_player.get_color(), direction)
+            self._board.push_marble(board_pos, current_player.get_color(), direction)
 
             # update the current turn to the other player
             other_player = self.get_other_player(playername)
             self.set_current_turn(other_player.get_name())
 
+            # update all marble counts (moving player's red captures!)
+                # reset the tray after counting them all
+
+
             # check for game winner after every valid turn
             self.check_for_winner()     # updates self._winner and prints win announcement
 
+
+
+            return True
+        return False
 
     def get_player(self, name):
         """returns a Player from a given name"""
@@ -210,10 +213,17 @@ class GameBoard:
         if direction == 'L':
             self._board[position[0]][position[1] - 1] = color
 
+        if direction == 'R':
+            self._board[position[0]][position[1] + 1] = color
+
+        if direction == 'B':
+            self._board[position[0] + 1][position[1]] = color
+
+        if direction == 'F':
+            self._board[position[0] - 1][position[1] - 1] = color
+
         # make the given tile empty
         self._board[position[0]][position[1]] = ' '
-
-
 
     def get_tile(self, position):
         """returns the status of a tile"""
@@ -276,9 +286,17 @@ game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
 # game.make_move('PlayerB', (2,6), 'L')
 # game.set_winner("Carl")
 # game.make_move('PlayerA', (0, 5), 'L')
-# game.make_move('PlayerB', (6, 5), 'L')
+
 game.display_board()
 print(game.get_marble_count())
+print(game.make_move('PlayerA', (6, 0), 'L'))
+print(game.make_move('PlayerB', (6, 6), 'R'))
+print(game.make_move('PlayerA', (6, 1), 'B'))
+
+game.display_board()
+print(game.get_marble_count())
+
+
 
 
 
