@@ -73,19 +73,19 @@ class KubaGame:
 
     def make_move(self, playername, coordinates, direction):
         """makes a move on the game board"""
-        # check if the game has already been won
+        # update marble count by checking for winner
         self.check_for_winner(playername)  # updates self._winner and prints win announcement
-        if self._winner is not None:
-            return False
 
-        # convert input position to actual game board position
+        # convert input position to actual game board object position
         board_pos = (coordinates[0] + 1, coordinates[1] + 1)
 
         # if the parameters are validated
         if self.valid_make_move(playername, board_pos, direction):
             # make the move for the current player
             current_player = self.get_player(playername)
-            self._board.push_marble(board_pos, current_player.get_color(), direction)
+
+            self._board.push_marble_helper(board_pos, direction)
+            # self._board.push_marble(board_pos, current_player.get_color(), direction)
 
             # update the current turn to the other player
             other_player = self.get_other_player(playername)
@@ -159,6 +159,37 @@ class KubaGame:
         else:
             raise InvalidMoveError
 
+    def push_check(self, position, direction):
+        """data validation that the player is legally allowed to push the given marble in the direction given"""
+        # if the direction the player wants to push is Left, check one tile to the right for empty or tray
+        if direction == "L" \
+                and (self._board.get_tile((position[0], position[1] + 1)) == ' '
+                     or self._board.get_tile((position[0], position[1] + 1)) == '-'
+                     or self._board.get_tile((position[0], position[1] + 1)) == '|'):
+            pass
+        elif direction == "R" \
+                and (self._board.get_tile((position[0], position[1] - 1)) == ' '
+                     or self._board.get_tile((position[0], position[1] - 1)) == '-'
+                     or self._board.get_tile((position[0], position[1] - 1)) == '|'):
+            pass
+        elif direction == "B" \
+                and (self._board.get_tile((position[0] - 1, position[1])) == ' '
+                     or self._board.get_tile((position[0] - 1, position[1])) == '-'
+                     or self._board.get_tile((position[0] - 1, position[1])) == '|'):
+            pass
+        elif direction == "F" \
+                and (self._board.get_tile((position[0] + 1, position[1])) == ' '
+                     or self._board.get_tile((position[0] + 1, position[1])) == '-'
+                     or self._board.get_tile((position[0] + 1, position[1])) == '|'):
+            pass
+        else:
+            raise InvalidMoveError
+
+    def check_history(self, next_board):
+        """check that this move will not result in the identical board setup to the beginning of last turn"""
+        # need to compare the previous board setup (before last turn) to the hypothetical board setup after this move
+        return
+
     def valid_make_move(self, name, position, direction):
         """handles data validation for make_move function"""
         # data validation for game already won
@@ -196,6 +227,13 @@ class KubaGame:
             print("You can only push your own marbles!")
             return False
 
+        # data validation for push validity
+        try:
+            self.push_check(position, direction)
+        except InvalidMoveError:
+            print("There must be an adjacent edge or empty tile to push the marble in that direction!")
+            return False
+
 
 
 
@@ -211,25 +249,16 @@ class GameBoard:
     def __init__(self):
         """initialize the board to start positions"""
         self._board = []
-        # self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
-        # self._board.append(['|', 'B', 'B', ' ', ' ', ' ', 'W', 'W', '|'])     # initialize row 0...
-        # self._board.append(['|', 'B', 'B', ' ', 'R', ' ', 'W', 'W', '|'])
-        # self._board.append(['|', ' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
-        # self._board.append(['|', ' ', 'R', 'R', 'R', 'R', 'R', ' ', '|'])
-        # self._board.append(['|', ' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
-        # self._board.append(['|', 'W', 'W', ' ', 'R', ' ', 'B', 'B', '|'])
-        # self._board.append(['|', 'W', 'W', ' ', ' ', ' ', 'B', 'B', '|'])     # ...initialize row 6
-        # self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
-
         self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
-        self._board.append(['|', ' ', ' ', ' ', ' ', ' ', 'W', 'W', '|'])  # initialize row 0...
-        self._board.append(['|', ' ', ' ', ' ', 'R', ' ', 'W', 'W', '|'])
+        self._board.append(['|', 'B', 'B', ' ', ' ', ' ', 'W', 'W', '|'])     # initialize row 0...
+        self._board.append(['|', 'B', 'B', ' ', 'R', ' ', 'W', ' ', '|'])
         self._board.append(['|', ' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
         self._board.append(['|', ' ', 'R', 'R', 'R', 'R', 'R', ' ', '|'])
         self._board.append(['|', ' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
-        self._board.append(['|', 'W', 'W', ' ', 'R', ' ', ' ', ' ', '|'])
-        self._board.append(['|', 'W', 'W', ' ', ' ', ' ', ' ', ' ', '|'])  # ...initialize row 6
+        self._board.append(['|', 'W', 'W', ' ', 'R', ' ', 'B', 'B', '|'])
+        self._board.append(['|', 'W', 'W', ' ', ' ', ' ', 'B', 'B', '|'])     # ...initialize row 6
         self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
+
 
     def clear_tray(self):
         """clears the game board tray"""
@@ -241,9 +270,6 @@ class GameBoard:
                 row[0] = '|'
                 row[8] = '|'
             index += 1
-
-
-
 
     def get_board(self):
         """returns the game board"""
@@ -267,6 +293,29 @@ class GameBoard:
         # make the given tile empty
         self._board[position[0]][position[1]] = ' '
 
+    # -------------- initial effort at recursive push ---------------------------------
+    # def push_marble_rec(self, position, direction):
+    #     """recursive function to push a marble and adjacent marbles in a direction"""
+    #     # base case when the tile in front of the pushed marble is empty or tray, stop pushing
+    #     current_tile = self._board[position[0]][position[1]]
+    #
+    #     if current_tile == ' ' or current_tile == '-' or current_tile == '|':
+    #         return
+    #
+    #     if direction == 'F':
+    #         prev_tile = current_tile
+    #         current_tile =
+    #
+    #     self.push_marble_rec((position[0], [position[1] - 1]), direction)
+    #
+    # def push_marble_helper(self, position, direction):
+    #     self.push_marble_rec(position, direction)
+    # -------------- initial effort at recursive push --------------------------------
+
+
+        # otherwise, push the marble next to the current marble in the given direction
+
+
     def get_tile(self, position):
         """returns the status of a tile"""
         return self._board[position[0]][position[1]]
@@ -285,7 +334,6 @@ class GameBoard:
                 elif tile == 'W':
                     white_count += 1
         return white_count, black_count, red_count      # returns a tuple of these values
-
 
 class Player:
     """represents a player with a name and marble color"""
@@ -322,18 +370,18 @@ class InvalidMoveError(Exception):
 game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
 game.display_board()
 
-print("1", game.make_move('PlayerB', (0, 0), 'B'))
-print("2", game.make_move('PlayerA', (2, 6), 'x'))
-print("3", game.make_move('PlayerA', (0, 6), 'F'))
-print("4", game.make_move('PlayerB', (0, 6), 'B'))
-print("5", game.make_move('PlayerB', (2, 6), 'L'))
-print("6", game.make_move('PlayerA', (0, 5), 'L'))
-
-game.display_board()
-print(game.get_marble_count())
-print("7", game.make_move('PlayerA', (6, 0), 'L'))
-print("8", game.make_move('PlayerB', (6, 6), 'R'))
-print("9", game.make_move('PlayerA', (6, 1), 'B'))
+print("1", game.make_move('PlayerA', (0, 6), 'F'))
+# print("2", game.make_move('PlayerA', (2, 6), 'x'))
+# print("3", game.make_move('PlayerA', (0, 6), 'F'))
+# print("4", game.make_move('PlayerB', (0, 6), 'B'))
+# print("5", game.make_move('PlayerB', (2, 6), 'L'))
+# print("6", game.make_move('PlayerA', (0, 5), 'L'))
+#
+# game.display_board()
+# print(game.get_marble_count())
+# print("7", game.make_move('PlayerA', (6, 0), 'L'))
+# print("8", game.make_move('PlayerB', (6, 6), 'R'))
+# print("9", game.make_move('PlayerA', (6, 1), 'B'))
 
 game.display_board()
 print(game.get_marble_count())
