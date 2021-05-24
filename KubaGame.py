@@ -12,7 +12,7 @@ class KubaGame:
         self._board = GameBoard()
         self._turn = None
         self._winner = None
-        self._marble_count = ()     # (W, B, R)
+        self._marble_count = (8, 8, 13)     # (W, B, R)
 
     def display_board(self):
         """displays the game board"""
@@ -52,6 +52,17 @@ class KubaGame:
             self.set_winner(self._player2.get_name())
             print(self._player2.get_name(), "captured 7 reds and won the game!")
 
+        # if player 1 has no marbles on the board, player 2 wins
+        if self.get_marble_count()[0] == 0:
+            self.set_winner(self._player2.get_name())
+            print(self._player1.get_name(), "has no remaining marbles. Other player wins!")
+
+        # if player 2 has no marbles on the board, player 1 wins
+        if self.get_marble_count()[1] == 0:
+            self.set_winner(self._player1.get_name())
+            print(self._player2.get_name(), "has no remaining marbles. Other player wins!")
+
+
     def set_winner(self,  name):
         """sets the winner of the game to a player's name"""
         self._winner = name
@@ -62,6 +73,11 @@ class KubaGame:
 
     def make_move(self, playername, coordinates, direction):
         """makes a move on the game board"""
+        # check if the game has already been won
+        self.check_for_winner(playername)  # updates self._winner and prints win announcement
+        if self._winner is not None:
+            return False
+
         # convert input position to actual game board position
         board_pos = (coordinates[0] + 1, coordinates[1] + 1)
 
@@ -76,13 +92,15 @@ class KubaGame:
             self.set_current_turn(other_player.get_name())
 
             # update all marble counts (moving player's red captures!)
-                # reset the tray after counting them all
 
+
+            # clear the board tray after every valid move
+            self._board.clear_tray()
 
             # check for game winner after every valid turn
             self.check_for_winner(playername)     # updates self._winner and prints win announcement
-
-
+            if self._winner is not None:
+                return False
 
             return True
         return False
@@ -191,17 +209,41 @@ class KubaGame:
 class GameBoard:
     """represents the playing board"""
     def __init__(self):
-        # initialize the board to start positions
+        """initialize the board to start positions"""
         self._board = []
+        # self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
+        # self._board.append(['|', 'B', 'B', ' ', ' ', ' ', 'W', 'W', '|'])     # initialize row 0...
+        # self._board.append(['|', 'B', 'B', ' ', 'R', ' ', 'W', 'W', '|'])
+        # self._board.append(['|', ' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
+        # self._board.append(['|', ' ', 'R', 'R', 'R', 'R', 'R', ' ', '|'])
+        # self._board.append(['|', ' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
+        # self._board.append(['|', 'W', 'W', ' ', 'R', ' ', 'B', 'B', '|'])
+        # self._board.append(['|', 'W', 'W', ' ', ' ', ' ', 'B', 'B', '|'])     # ...initialize row 6
+        # self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
+
         self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
-        self._board.append(['|', 'B', 'B', ' ', ' ', ' ', 'W', 'W', '|'])     # initialize row 0...
-        self._board.append(['|', 'B', 'B', ' ', 'R', ' ', 'W', 'W', '|'])
+        self._board.append(['|', ' ', ' ', ' ', ' ', ' ', 'W', 'W', '|'])  # initialize row 0...
+        self._board.append(['|', ' ', ' ', ' ', 'R', ' ', 'W', 'W', '|'])
         self._board.append(['|', ' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
         self._board.append(['|', ' ', 'R', 'R', 'R', 'R', 'R', ' ', '|'])
         self._board.append(['|', ' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
-        self._board.append(['|', 'W', 'W', ' ', 'R', ' ', 'B', 'B', '|'])
-        self._board.append(['|', 'W', 'W', ' ', ' ', ' ', 'B', 'B', '|'])     # ...initialize row 6
+        self._board.append(['|', 'W', 'W', ' ', 'R', ' ', ' ', ' ', '|'])
+        self._board.append(['|', 'W', 'W', ' ', ' ', ' ', ' ', ' ', '|'])  # ...initialize row 6
         self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
+
+    def clear_tray(self):
+        """clears the game board tray"""
+        self._board[0] = ['-', '-', '-', '-', '-', '-', '-', '-', '-']
+        self._board[8] = ['-', '-', '-', '-', '-', '-', '-', '-', '-']
+        index = 0
+        for row in self._board:
+            if index != 0 and index != 8:
+                row[0] = '|'
+                row[8] = '|'
+            index += 1
+
+
+
 
     def get_board(self):
         """returns the game board"""
@@ -245,7 +287,6 @@ class GameBoard:
         return white_count, black_count, red_count      # returns a tuple of these values
 
 
-
 class Player:
     """represents a player with a name and marble color"""
     def __init__(self, name, color):
@@ -279,19 +320,20 @@ class InvalidMoveError(Exception):
 
 
 game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
-# game.make_move('PlayerB', (0,0), 'B')
-# game.make_move('PlayerA', (2,6), 'x')
-# game.make_move('PlayerA', (0,6), 'F')
-# game.make_move('PlayerB', (0,6), 'B')
-# game.make_move('PlayerB', (2,6), 'L')
-# game.set_winner("Carl")
-# game.make_move('PlayerA', (0, 5), 'L')
+game.display_board()
+
+print("1", game.make_move('PlayerB', (0, 0), 'B'))
+print("2", game.make_move('PlayerA', (2, 6), 'x'))
+print("3", game.make_move('PlayerA', (0, 6), 'F'))
+print("4", game.make_move('PlayerB', (0, 6), 'B'))
+print("5", game.make_move('PlayerB', (2, 6), 'L'))
+print("6", game.make_move('PlayerA', (0, 5), 'L'))
 
 game.display_board()
 print(game.get_marble_count())
-print(game.make_move('PlayerA', (6, 0), 'L'))
-print(game.make_move('PlayerB', (6, 6), 'R'))
-print(game.make_move('PlayerA', (6, 1), 'B'))
+print("7", game.make_move('PlayerA', (6, 0), 'L'))
+print("8", game.make_move('PlayerB', (6, 6), 'R'))
+print("9", game.make_move('PlayerA', (6, 1), 'B'))
 
 game.display_board()
 print(game.get_marble_count())
