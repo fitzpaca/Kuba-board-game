@@ -251,13 +251,13 @@ class GameBoard:
         """initialize the board to start positions"""
         self._board = []
         self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
-        self._board.append(['|', 'B', 'B', ' ', ' ', ' ', 'W', 'W', '|'])     # initialize row 0...
-        self._board.append(['|', 'B', 'B', ' ', 'R', ' ', 'W', 'W', '|'])
+        self._board.append(['|', 'W', 'W', ' ', ' ', ' ', 'B', 'B', '|'])     # initialize row 0...
+        self._board.append(['|', 'W', 'W', ' ', 'R', ' ', 'B', 'B', '|'])
         self._board.append(['|', ' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
         self._board.append(['|', ' ', 'R', 'R', 'R', 'R', 'R', ' ', '|'])
         self._board.append(['|', ' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
-        self._board.append(['|', 'W', 'W', ' ', 'R', ' ', 'B', 'B', '|'])
-        self._board.append(['|', 'W', 'W', ' ', ' ', ' ', 'B', 'B', '|'])     # ...initialize row 6
+        self._board.append(['|', 'B', 'B', ' ', 'R', ' ', 'W', 'W', '|'])
+        self._board.append(['|', 'B', 'B', ' ', ' ', ' ', 'W', 'W', '|'])     # ...initialize row 6
         self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
         self._marble_row = Queue()
 
@@ -416,18 +416,19 @@ class Queue:
 
 # game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
 # game.display_board()
-# print("1", game.make_move('PlayerA', (0, 5), 'B'))
+# print("1", game.make_move('PlayerB', (0, 5), 'B'))
 # game.display_board()
-# print("2", game.make_move('PlayerB', (6, 6), 'F'))
+# print("2", game.make_move('PlayerA', (6, 6), 'F'))
 # game.display_board()
-# print("3", game.make_move('PlayerA', (1, 5), 'B'))
+# print("3", game.make_move('PlayerB', (1, 5), 'B'))
 # game.display_board()
-# print("4", game.make_move('PlayerB', (4, 6), 'L'))
+# print("4", game.make_move('PlayerA', (4, 6), 'L'))
 # game.display_board()
-# print("5", game.make_move('PlayerA', (2, 5), 'B'))
+# print("5", game.make_move('PlayerB', (2, 5), 'B'))
 # game.display_board()
-# print("6", game.make_move('PlayerB', (4, 6), 'L'))
+# print("6", game.make_move('PlayerA', (4, 6), 'L'))
 # game.display_board()
+# print(game.get_marble_count())
 
 
 
