@@ -84,7 +84,8 @@ class KubaGame:
             # make the move for the current player
             current_player = self.get_player(playername)
 
-            self._board.push_marble_helper(board_pos, direction)
+            self._board.push_marble_q(board_pos, direction)
+            # self._board.push_marble_helper(board_pos, direction)
             # self._board.push_marble(board_pos, current_player.get_color(), direction)
 
             # update the current turn to the other player
@@ -250,7 +251,7 @@ class GameBoard:
         """initialize the board to start positions"""
         self._board = []
         self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
-        self._board.append(['|', 'B', 'B', ' ', ' ', ' ', 'W', 'W', '|'])     # initialize row 0...
+        self._board.append(['|', 'B', 'B', ' ', ' ', ' ', 'W', 'R', '|'])     # initialize row 0...
         self._board.append(['|', 'B', 'B', ' ', 'R', ' ', 'W', ' ', '|'])
         self._board.append(['|', ' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
         self._board.append(['|', ' ', 'R', 'R', 'R', 'R', 'R', ' ', '|'])
@@ -258,6 +259,7 @@ class GameBoard:
         self._board.append(['|', 'W', 'W', ' ', 'R', ' ', 'B', 'B', '|'])
         self._board.append(['|', 'W', 'W', ' ', ' ', ' ', 'B', 'B', '|'])     # ...initialize row 6
         self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
+        self._marble_row = Queue()
 
 
     def clear_tray(self):
@@ -292,6 +294,39 @@ class GameBoard:
 
         # make the given tile empty
         self._board[position[0]][position[1]] = ' '
+
+    # --------------- effort for queue push_marble -----------------------------------
+    def push_marble_q(self, position, direction):
+        # we are given a position as a tuple and a direction R L B F
+
+        # initialize list for pushing a row
+            # first value in queue is starting position
+        counter = 1
+        current_tile = self._board[position[0]][position[1]]
+        self._marble_row.enqueue(' ')
+        self._marble_row.enqueue(current_tile)
+
+        if direction == 'R':
+            next_tile = self._board[position[0]][position[1] + counter]
+        # if next tile in given direction is empty, replace it and stop
+            while next_tile in ['B', 'W', 'R']:
+
+                self._board[position[0]][position[1] + counter - 1] = self._marble_row.dequeue()    # makes current tile empty ' '
+                self._marble_row.enqueue(next_tile)
+                self._board[position[0]][position[1] + counter] = self._marble_row.dequeue()
+                counter += 1
+                next_tile = self._board[position[0]][position[1] + counter]
+
+
+
+
+
+
+        return
+
+
+
+    # --------------- effort for queue push_marble -----------------------------------
 
     # -------------- initial effort at recursive push ---------------------------------
     # def push_marble_rec(self, position, direction):
@@ -365,12 +400,38 @@ class InvalidMoveError(Exception):
     pass
 
 
+class Queue:
+    """
+    An implementation of the Queue ADT that uses Python's built-in lists
+        ** referenced from Module 7 **
+    """
+    def __init__(self):
+        self.list = []
+
+    def enqueue(self, data):
+        self.list.append(data)
+
+    def dequeue(self):
+        val = self.list[0]
+        del self.list[0]
+        return val
+
+    def is_empty(self):
+        return len(self.list) == 0
+
+
+
+
+
 
 
 game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
 game.display_board()
 
-print("1", game.make_move('PlayerA', (0, 6), 'F'))
+print("1", game.make_move('PlayerA', (0, 5), 'R'))
+game.display_board()
+
+
 # print("2", game.make_move('PlayerA', (2, 6), 'x'))
 # print("3", game.make_move('PlayerA', (0, 6), 'F'))
 # print("4", game.make_move('PlayerB', (0, 6), 'B'))
@@ -382,9 +443,9 @@ print("1", game.make_move('PlayerA', (0, 6), 'F'))
 # print("7", game.make_move('PlayerA', (6, 0), 'L'))
 # print("8", game.make_move('PlayerB', (6, 6), 'R'))
 # print("9", game.make_move('PlayerA', (6, 1), 'B'))
-
-game.display_board()
-print(game.get_marble_count())
+#
+# game.display_board()
+# print(game.get_marble_count())
 
 
 
