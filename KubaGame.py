@@ -428,21 +428,21 @@ class Queue:
 
 
 
-game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
-game.display_board()
-print("1", game.make_move('PlayerB', (0, 5), 'B'))
-game.display_board()
-print("2", game.make_move('PlayerA', (6, 6), 'F'))
-game.display_board()
-print("3", game.make_move('PlayerB', (1, 5), 'B'))
-game.display_board()
-print("4", game.make_move('PlayerA', (4, 6), 'L'))
-game.display_board()
-print("5", game.make_move('PlayerB', (2, 5), 'B'))
-game.display_board()
-print(game.get_marble_count())
-print(game.get_captured('PlayerA'))
-print(game.get_captured('PlayerB'))
+# game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
+# game.display_board()
+# print("1", game.make_move('PlayerB', (0, 5), 'B'))
+# game.display_board()
+# print("2", game.make_move('PlayerA', (6, 6), 'F'))
+# game.display_board()
+# print("3", game.make_move('PlayerB', (1, 5), 'B'))
+# game.display_board()
+# print("4", game.make_move('PlayerA', (4, 6), 'L'))
+# game.display_board()
+# print("5", game.make_move('PlayerB', (2, 5), 'B'))
+# game.display_board()
+# print(game.get_marble_count())
+# print(game.get_captured('PlayerA'))
+# print(game.get_captured('PlayerB'))
 
 
 
