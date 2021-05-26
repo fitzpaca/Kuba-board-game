@@ -37,6 +37,14 @@ class KubaGame:
         """returns the number of captured red marbles by the given player name"""
         return self.get_player(name).get_captured()
 
+    def update_captured(self, name, reds_before):
+        """checks if a player captured a red marble on their turn. Calls add_captured if so."""
+        reds_after = self.get_marble_count()[2]
+        if reds_before == reds_after:
+            return
+        # otherwise, a red has been captured -- give credit to player
+        self.get_player(name).add_captured()
+
     def get_winner(self):
         """returns the winner of the game. returns None if game is not over."""
         return self._winner
@@ -81,12 +89,16 @@ class KubaGame:
 
         # if the parameters are validated
         if self.valid_make_move(playername, board_pos, direction):
+            # count the reds before the move is made
+            reds_before = self.get_marble_count()[2]
+
             # make the move for the current player
             current_player = self.get_player(playername)
-
             self._board.push_marble_q(board_pos, direction)
-            # self._board.push_marble_helper(board_pos, direction)
             # self._board.push_marble(board_pos, current_player.get_color(), direction)
+
+            # update any reds captured on this turn for the player
+            self.update_captured(playername, reds_before)
 
             # update the current turn to the other player
             other_player = self.get_other_player(playername)
@@ -277,23 +289,23 @@ class GameBoard:
         """returns the game board"""
         return self._board
 
-    def push_marble(self, position, color, direction):
-        # push the marble in the given direction
-        # (if we want to push a marble left, then the tile to the right must be empty (empty or right edge)
-        if direction == 'L':
-            self._board[position[0]][position[1] - 1] = color
-
-        if direction == 'R':
-            self._board[position[0]][position[1] + 1] = color
-
-        if direction == 'B':
-            self._board[position[0] + 1][position[1]] = color
-
-        if direction == 'F':
-            self._board[position[0] - 1][position[1] - 1] = color
-
-        # make the given tile empty
-        self._board[position[0]][position[1]] = ' '
+    # def push_marble(self, position, color, direction):
+    #     # push the marble in the given direction
+    #     # (if we want to push a marble left, then the tile to the right must be empty (empty or right edge)
+    #     if direction == 'L':
+    #         self._board[position[0]][position[1] - 1] = color
+    #
+    #     if direction == 'R':
+    #         self._board[position[0]][position[1] + 1] = color
+    #
+    #     if direction == 'B':
+    #         self._board[position[0] + 1][position[1]] = color
+    #
+    #     if direction == 'F':
+    #         self._board[position[0] - 1][position[1] - 1] = color
+    #
+    #     # make the given tile empty
+    #     self._board[position[0]][position[1]] = ' '
 
     # --------------- effort for queue push_marble -----------------------------------
     def push_marble_q(self, position, direction):
@@ -381,6 +393,8 @@ class Player:
         self._captured += 1
 
 
+
+
 class InvalidMoveError(Exception):
     """exception for invalid direction input"""
     pass
@@ -414,21 +428,21 @@ class Queue:
 
 
 
-# game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
-# game.display_board()
-# print("1", game.make_move('PlayerB', (0, 5), 'B'))
-# game.display_board()
-# print("2", game.make_move('PlayerA', (6, 6), 'F'))
-# game.display_board()
-# print("3", game.make_move('PlayerB', (1, 5), 'B'))
-# game.display_board()
-# print("4", game.make_move('PlayerA', (4, 6), 'L'))
-# game.display_board()
-# print("5", game.make_move('PlayerB', (2, 5), 'B'))
-# game.display_board()
-# print("6", game.make_move('PlayerA', (4, 6), 'L'))
-# game.display_board()
-# print(game.get_marble_count())
+game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
+game.display_board()
+print("1", game.make_move('PlayerB', (0, 5), 'B'))
+game.display_board()
+print("2", game.make_move('PlayerA', (6, 6), 'F'))
+game.display_board()
+print("3", game.make_move('PlayerB', (1, 5), 'B'))
+game.display_board()
+print("4", game.make_move('PlayerA', (4, 6), 'L'))
+game.display_board()
+print("5", game.make_move('PlayerB', (2, 5), 'B'))
+game.display_board()
+print(game.get_marble_count())
+print(game.get_captured('PlayerA'))
+print(game.get_captured('PlayerB'))
 
 
 
