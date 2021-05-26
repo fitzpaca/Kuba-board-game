@@ -251,8 +251,8 @@ class GameBoard:
         """initialize the board to start positions"""
         self._board = []
         self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
-        self._board.append(['|', 'B', 'B', ' ', ' ', ' ', 'W', 'R', '|'])     # initialize row 0...
-        self._board.append(['|', 'B', 'B', ' ', 'R', ' ', 'W', ' ', '|'])
+        self._board.append(['|', 'B', 'B', ' ', ' ', ' ', 'W', 'W', '|'])     # initialize row 0...
+        self._board.append(['|', 'B', 'B', ' ', 'R', ' ', 'W', 'W', '|'])
         self._board.append(['|', ' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
         self._board.append(['|', ' ', 'R', 'R', 'R', 'R', 'R', ' ', '|'])
         self._board.append(['|', ' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
@@ -299,56 +299,42 @@ class GameBoard:
     def push_marble_q(self, position, direction):
         # we are given a position as a tuple and a direction R L B F
 
-        # initialize list for pushing a row
-            # first value in queue is starting position
-        counter = 1
-        current_tile = self._board[position[0]][position[1]]
+        # initialize the queue with an empty space and then first tile
+        self._marble_row.clear()
         self._marble_row.enqueue(' ')
-        self._marble_row.enqueue(current_tile)
+        self._marble_row.enqueue(self._board[position[0]][position[1]])
+        counter = 0         # counter points at the first current tile
 
         if direction == 'R':
-            next_tile = self._board[position[0]][position[1] + counter]
-        # if next tile in given direction is empty, replace it and stop
-            while next_tile in ['B', 'W', 'R']:
-
-                self._board[position[0]][position[1] + counter - 1] = self._marble_row.dequeue()    # makes current tile empty ' '
-                self._marble_row.enqueue(next_tile)
-                self._board[position[0]][position[1] + counter] = self._marble_row.dequeue()
+            while self._board[position[0]][position[1] + counter] in ['B', 'W', 'R']:
+                self._board[position[0]][position[1] + counter] = self._marble_row.dequeue()       # dequeue the val into current
+                self._marble_row.enqueue(self._board[position[0]][position[1] + counter + 1])       # queue the next val
                 counter += 1
-                next_tile = self._board[position[0]][position[1] + counter]
+            self._board[position[0]][position[1] + counter] = self._marble_row.dequeue()
 
+        if direction == 'L':
+            while self._board[position[0]][position[1] - counter] in ['B', 'W', 'R']:
+                self._board[position[0]][position[1] - counter] = self._marble_row.dequeue()       # dequeue the val into current
+                self._marble_row.enqueue(self._board[position[0]][position[1] - (counter + 1)])
+                counter += 1
+            self._board[position[0]][position[1] - counter] = self._marble_row.dequeue()
 
+        if direction == 'B':
+            while self._board[position[0] + counter][position[1]] in ['B', 'W', 'R']:
+                self._board[position[0] + counter][position[1]] = self._marble_row.dequeue()       # dequeue the val into current
+                self._marble_row.enqueue(self._board[position[0] + counter + 1][position[1]])       # queue the next val
+                counter += 1
+            self._board[position[0] + counter][position[1]] = self._marble_row.dequeue()
 
-
-
+        if direction == 'F':
+            while self._board[position[0] - counter][position[1]] in ['B', 'W', 'R']:
+                self._board[position[0] - counter][position[1]] = self._marble_row.dequeue()       # dequeue the val into current
+                self._marble_row.enqueue(self._board[position[0] - (counter + 1)][position[1]])
+                counter += 1
+            self._board[position[0] - counter][position[1]] = self._marble_row.dequeue()
 
         return
 
-
-
-    # --------------- effort for queue push_marble -----------------------------------
-
-    # -------------- initial effort at recursive push ---------------------------------
-    # def push_marble_rec(self, position, direction):
-    #     """recursive function to push a marble and adjacent marbles in a direction"""
-    #     # base case when the tile in front of the pushed marble is empty or tray, stop pushing
-    #     current_tile = self._board[position[0]][position[1]]
-    #
-    #     if current_tile == ' ' or current_tile == '-' or current_tile == '|':
-    #         return
-    #
-    #     if direction == 'F':
-    #         prev_tile = current_tile
-    #         current_tile =
-    #
-    #     self.push_marble_rec((position[0], [position[1] - 1]), direction)
-    #
-    # def push_marble_helper(self, position, direction):
-    #     self.push_marble_rec(position, direction)
-    # -------------- initial effort at recursive push --------------------------------
-
-
-        # otherwise, push the marble next to the current marble in the given direction
 
 
     def get_tile(self, position):
@@ -419,17 +405,31 @@ class Queue:
     def is_empty(self):
         return len(self.list) == 0
 
+    def clear(self):
+        self.list = []
 
 
 
 
 
 
-game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
-game.display_board()
 
-print("1", game.make_move('PlayerA', (0, 5), 'R'))
-game.display_board()
+# game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
+# game.display_board()
+# print("1", game.make_move('PlayerA', (0, 5), 'B'))
+# game.display_board()
+# print("2", game.make_move('PlayerB', (6, 6), 'F'))
+# game.display_board()
+# print("3", game.make_move('PlayerA', (1, 5), 'B'))
+# game.display_board()
+# print("4", game.make_move('PlayerB', (4, 6), 'L'))
+# game.display_board()
+# print("5", game.make_move('PlayerA', (2, 5), 'B'))
+# game.display_board()
+# print("6", game.make_move('PlayerB', (4, 6), 'L'))
+# game.display_board()
+
+
 
 
 # print("2", game.make_move('PlayerA', (2, 6), 'x'))
