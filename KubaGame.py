@@ -104,17 +104,11 @@ class KubaGame:
             other_player = self.get_other_player(playername)
             self.set_current_turn(other_player.get_name())
 
-            # update all marble counts (moving player's red captures!)
-
-
             # clear the board tray after every valid move
             self._board.clear_tray()
 
             # check for game winner after every valid turn
             self.check_for_winner(playername)     # updates self._winner and prints win announcement
-            if self._winner is not None:
-                return False
-
             return True
         return False
 
@@ -289,28 +283,8 @@ class GameBoard:
         """returns the game board"""
         return self._board
 
-    # def push_marble(self, position, color, direction):
-    #     # push the marble in the given direction
-    #     # (if we want to push a marble left, then the tile to the right must be empty (empty or right edge)
-    #     if direction == 'L':
-    #         self._board[position[0]][position[1] - 1] = color
-    #
-    #     if direction == 'R':
-    #         self._board[position[0]][position[1] + 1] = color
-    #
-    #     if direction == 'B':
-    #         self._board[position[0] + 1][position[1]] = color
-    #
-    #     if direction == 'F':
-    #         self._board[position[0] - 1][position[1] - 1] = color
-    #
-    #     # make the given tile empty
-    #     self._board[position[0]][position[1]] = ' '
-
-    # --------------- effort for queue push_marble -----------------------------------
     def push_marble_q(self, position, direction):
-        # we are given a position as a tuple and a direction R L B F
-
+        """pushes a the marble in the given position in the given direction, pushing all marbles in front of it too"""
         # initialize the queue with an empty space and then first tile
         self._marble_row.clear()
         self._marble_row.enqueue(' ')
@@ -346,8 +320,6 @@ class GameBoard:
             self._board[position[0] - counter][position[1]] = self._marble_row.dequeue()
 
         return
-
-
 
     def get_tile(self, position):
         """returns the status of a tile"""
@@ -393,8 +365,6 @@ class Player:
         self._captured += 1
 
 
-
-
 class InvalidMoveError(Exception):
     """exception for invalid direction input"""
     pass
@@ -416,9 +386,6 @@ class Queue:
         del self.list[0]
         return val
 
-    def is_empty(self):
-        return len(self.list) == 0
-
     def clear(self):
         self.list = []
 
@@ -428,21 +395,22 @@ class Queue:
 
 
 
-# game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
-# game.display_board()
-# print("1", game.make_move('PlayerB', (0, 5), 'B'))
-# game.display_board()
-# print("2", game.make_move('PlayerA', (6, 6), 'F'))
-# game.display_board()
-# print("3", game.make_move('PlayerB', (1, 5), 'B'))
-# game.display_board()
-# print("4", game.make_move('PlayerA', (4, 6), 'L'))
-# game.display_board()
-# print("5", game.make_move('PlayerB', (2, 5), 'B'))
-# game.display_board()
-# print(game.get_marble_count())
-# print(game.get_captured('PlayerA'))
-# print(game.get_captured('PlayerB'))
+game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
+game.display_board()
+print("1", game.make_move('PlayerB', (0, 5), 'B'))
+game.display_board()
+print("2", game.make_move('PlayerA', (6, 6), 'F'))
+game.display_board()
+print("3", game.make_move('PlayerB', (1, 5), 'B'))
+game.display_board()
+print("4", game.make_move('PlayerA', (4, 6), 'L'))
+game.display_board()
+game.set_winner('PlayerA')
+print("5", game.make_move('PlayerB', (2, 5), 'B'))
+game.display_board()
+print(game.get_marble_count())
+print(game.get_captured('PlayerA'))
+print(game.get_captured('PlayerB'))
 
 
 
