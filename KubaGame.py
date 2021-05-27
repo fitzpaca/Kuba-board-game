@@ -1,8 +1,9 @@
 # Author: Carl Fitzpatrick
 # Date: 05/20/21
 # Description: This program lets two players participate in a virtual board game
-#       called Kuba.
+#               called Kuba.
 import copy
+
 
 class KubaGame:
     """represents the Kuba board game"""
@@ -59,7 +60,7 @@ class KubaGame:
         """returns the winner of the game. returns None if game is not over."""
         return self._winner
 
-    def check_for_winner(self, name):
+    def check_for_winner(self):
         """checks if the game has been won by a player capturing 7 reds or 7 opposing marbles.
         Returns True if a player has won the game. False otherwise."""
         if self._player1.get_captured() == 7:
@@ -80,7 +81,6 @@ class KubaGame:
             self.set_winner(self._player1.get_name())
             print(self._player2.get_name(), "has no remaining marbles. Other player wins!")
 
-
     def set_winner(self,  name):
         """sets the winner of the game to a player's name"""
         self._winner = name
@@ -97,25 +97,16 @@ class KubaGame:
         # make the hypothetical move on the deep copy
         board_copy.push_marble_q(coordinates, direction)
 
-        return board_copy.get_board()
+        return board_copy
 
     def make_move(self, playername, coordinates, direction):
         """makes a move on the game board"""
-        # update marble count by checking for winner
-        self.check_for_winner(playername)  # updates self._winner and prints win announcement
 
         # convert input position to actual game board object position
         board_pos = (coordinates[0] + 1, coordinates[1] + 1)
 
         # if the parameters are validated
         if self.valid_make_move(playername, board_pos, direction):
-            # make hypothetical move and see if it matches previous board (eventually this goes in pre-move data validation)
-            hyp_board = self.make_hyp_move(board_pos, direction)
-
-            # if the hypothetical board matches the prev_board, print statement and return False
-            if hyp_board == self._board_prev:
-                print("You cannot revert the last player's move to identical board!")
-                return False
 
             # store a deep copy of the previous board and then make the validated move
             self.set_board_prev(self._board.get_board())
@@ -124,9 +115,7 @@ class KubaGame:
             reds_before = self.get_marble_count()[2]
 
             # make the move for the current player
-            current_player = self.get_player(playername)
             self._board.push_marble_q(board_pos, direction)
-            # self._board.push_marble(board_pos, current_player.get_color(), direction)
 
             # update any reds captured on this turn for the player
             self.update_captured(playername, reds_before)
@@ -138,8 +127,8 @@ class KubaGame:
             # clear the board tray after every valid move
             self._board.clear_tray()
 
-            # check for game winner after every valid turn
-            self.check_for_winner(playername)     # updates self._winner and prints win announcement
+            # check for game winner after every valid turn (** only here to print out win statement can delete bc its called prior to turn)
+            self.check_for_winner()     # updates self._winner and prints win announcement
             return True
         return False
 
@@ -157,7 +146,7 @@ class KubaGame:
         if name == self._player2.get_name():
             return self._player1
 
-    # ------ start error handling for KubaGame --------------------------
+    # ------ start error handling for make_move --------------------------
     def marble_color_check(self, name, position):
         """data validation for tile color player is attempting to move"""
         marble_on_tile = self.get_marble(position)
@@ -192,6 +181,7 @@ class KubaGame:
 
     def winner_check(self):
         """data validation that the game has not been won already"""
+        self.check_for_winner()
         if self._winner is None:
             pass
         else:
@@ -223,10 +213,40 @@ class KubaGame:
         else:
             raise InvalidMoveError
 
-    def check_history(self, next_board):
+    def history_check(self, board_pos, direction):
         """check that this move will not result in the identical board setup to the beginning of last turn"""
-        # need to compare the previous board setup (before last turn) to the hypothetical board setup after this move
-        return
+        hyp_board_object = self.make_hyp_move(board_pos, direction)
+        hyp_board = hyp_board_object.get_board()
+
+        # if the hypothetical board matches the prev_board, raise InvalidMoveError
+        if hyp_board == self._board_prev:
+            raise InvalidMoveError
+        pass
+
+    def self_capture_check(self, name, board_pos, direction):
+        """check that this move will not result in a player pushing one of his own marbles of the edge"""
+        if name == self._player1.get_name():
+            # store the number of player1's marbles before the turn
+            marbles_before = self._board.get_marble_count()[0]
+
+            # make the hypothetical move (changing only a deep copy)
+            hyp_board_obj = self.make_hyp_move(board_pos, direction)
+            marbles_after = hyp_board_obj.get_marble_count()[0]
+
+            if marbles_before != marbles_after:
+                raise InvalidMoveError
+
+        if name == self._player2.get_name():
+            # store the number of player1's marbles before the turn
+            marbles_before = self._board.get_marble_count()[1]
+
+            # make the hypothetical move (changing only a deep copy)
+            hyp_board_obj = self.make_hyp_move(board_pos, direction)
+            marbles_after = hyp_board_obj.get_marble_count()[1]
+
+            if marbles_before != marbles_after:
+                raise InvalidMoveError
+        pass
 
     def valid_make_move(self, name, position, direction):
         """handles data validation for make_move function"""
@@ -272,14 +292,24 @@ class KubaGame:
             print("There must be an adjacent edge or empty tile to push the marble in that direction!")
             return False
 
+        # data validation for a player pushing their own marble off the board
+        try:
+            self.self_capture_check(name, position, direction)
+        except InvalidMoveError:
+            print("You cannot make a move that pushes your own marble off the board")
+            return False
 
-
-
+        # data validation for board history
+        try:
+            self.history_check(position, direction)
+        except InvalidMoveError:
+            print("You cannot revert the last player's move to identical board!")
+            return False
 
         # otherwise, input is validated
         return True
 
-    # ------ end error handling for KubaGame --------------------------
+    # ------ end error handling for make_move --------------------------
 
 
 class GameBoard:
@@ -297,7 +327,6 @@ class GameBoard:
         self._board.append(['|', 'B', 'B', ' ', ' ', ' ', 'W', 'W', '|'])     # ...initialize row 6
         self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
         self._marble_row = Queue()
-
 
     def clear_tray(self):
         """clears the game board tray"""
@@ -371,6 +400,7 @@ class GameBoard:
                     white_count += 1
         return white_count, black_count, red_count      # returns a tuple of these values
 
+
 class Player:
     """represents a player with a name and marble color"""
     def __init__(self, name, color):
@@ -437,6 +467,10 @@ game.display_board()
 print("4", game.make_move('PlayerA', (6, 5), 'F'))
 game.display_board()
 print(game.get_current_turn())
+print("4", game.make_move('PlayerA', (6, 5), 'R'))
+game.display_board()
+print(game.get_current_turn())
+
 
 
 
