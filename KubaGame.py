@@ -14,6 +14,7 @@ class KubaGame:
         self._turn = None
         self._winner = None
         self._marble_count = (8, 8, 13)     # (W, B, R)
+        self._board_prev = copy.deepcopy(self._board.get_board())
 
     def display_board(self):
         """displays the game board"""
@@ -21,6 +22,13 @@ class KubaGame:
         for row in self._board.get_board():
             print("  ".join(x for x in row))
 
+    def display_prev(self):
+        for row in self._board_prev:
+            print("  ".join(x for x in row))
+
+    def set_board_prev(self, board):
+        """sets the board history to store the previous valid board"""
+        self._board_prev = copy.deepcopy(board)
 
     def get_current_turn(self):
         """Returns the players name whose turn it is.
@@ -81,6 +89,16 @@ class KubaGame:
         """returns the color of marble at a given position. returns 'X' if tile is empty."""
         return self._board.get_tile(board_pos)
 
+    def make_hyp_move(self, coordinates, direction):
+        """makes a hypothetical move and then compares it with the previous board to check for invalid board repeat moves"""
+        # make a deep copy of the board object
+        board_copy = copy.deepcopy(self._board)
+
+        # make the hypothetical move on the deep copy
+        board_copy.push_marble_q(coordinates, direction)
+
+        return board_copy.get_board()
+
     def make_move(self, playername, coordinates, direction):
         """makes a move on the game board"""
         # update marble count by checking for winner
@@ -91,6 +109,17 @@ class KubaGame:
 
         # if the parameters are validated
         if self.valid_make_move(playername, board_pos, direction):
+            # make hypothetical move and see if it matches previous board (eventually this goes in pre-move data validation)
+            hyp_board = self.make_hyp_move(board_pos, direction)
+
+            # if the hypothetical board matches the prev_board, print statement and return False
+            if hyp_board == self._board_prev:
+                print("You cannot revert the last player's move to identical board!")
+                return False
+
+            # store a deep copy of the previous board and then make the validated move
+            self.set_board_prev(self._board.get_board())
+
             # count the reds before the move is made
             reds_before = self.get_marble_count()[2]
 
@@ -401,17 +430,16 @@ game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
 game.display_board()
 print("1", game.make_move('PlayerB', (0, 5), 'B'))
 game.display_board()
-print("2", game.make_move('PlayerA', (6, 6), 'F'))
+print("2", game.make_move('PlayerA', (6, 5), 'F'))
 game.display_board()
 print("3", game.make_move('PlayerB', (1, 5), 'B'))
 game.display_board()
-print("4", game.make_move('PlayerA', (4, 6), 'L'))
+print("4", game.make_move('PlayerA', (6, 5), 'F'))
 game.display_board()
-print("5", game.make_move('PlayerB', (2, 5), 'B'))
-game.display_board()
-print(game.get_marble_count())
-print(game.get_captured('PlayerA'))
-print(game.get_captured('PlayerB'))
+print(game.get_current_turn())
+
+
+
 
 
 
