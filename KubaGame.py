@@ -4,6 +4,7 @@
 #               called Kuba.
 import copy
 
+
 class KubaGame:
     """represents the Kuba board game"""
     def __init__(self, player1, player2):
@@ -29,6 +30,20 @@ class KubaGame:
     def set_board_prev(self, board):
         """sets the board history to store the previous valid board"""
         self._board_prev = copy.deepcopy(board)
+
+    def get_player(self, name):
+        """returns a Player from a given name"""
+        if name == self._player1.get_name():
+            return self._player1
+        if name == self._player2.get_name():
+            return self._player2
+
+    def get_other_player(self, name):
+        """returns the opposing Player from a given name"""
+        if name == self._player1.get_name():
+            return self._player2
+        if name == self._player2.get_name():
+            return self._player1
 
     def get_current_turn(self):
         """Returns the players name whose turn it is.
@@ -89,7 +104,8 @@ class KubaGame:
         return self._board.get_tile(board_pos)
 
     def make_hyp_move(self, coordinates, direction):
-        """makes a hypothetical move and then compares it with the previous board to check for invalid board repeat moves"""
+        """makes a hypothetical move and then compares it with the previous board
+         to check for invalid board repeat moves"""
         # make a deep copy of the board object
         board_copy = copy.deepcopy(self._board)
 
@@ -98,14 +114,14 @@ class KubaGame:
 
         return board_copy
 
-    def make_move(self, playername, coordinates, direction):
+    def make_move(self, player_name, coordinates, direction):
         """makes a move on the game board"""
 
         # convert input position to actual game board object position
         board_pos = (coordinates[0] + 1, coordinates[1] + 1)
 
         # if the parameters are validated
-        if self.valid_make_move(playername, board_pos, direction):
+        if self.valid_make_move(player_name, board_pos, direction):
 
             # store a deep copy of the previous board and then make the validated move
             self.set_board_prev(self._board.get_board())
@@ -117,33 +133,20 @@ class KubaGame:
             self._board.push_marble_q(board_pos, direction)
 
             # update any reds captured on this turn for the player
-            self.update_captured(playername, reds_before)
+            self.update_captured(player_name, reds_before)
 
             # update the current turn to the other player
-            other_player = self.get_other_player(playername)
+            other_player = self.get_other_player(player_name)
             self.set_current_turn(other_player.get_name())
 
             # clear the board tray after every valid move
             self._board.clear_tray()
 
-            # check for game winner after every valid turn (** only here to print out win statement can delete bc its called prior to turn)
+            # check for game winner after every valid turn
+            # (** only here to print out win statement can delete bc its called prior to turn)
             self.check_for_winner()     # updates self._winner and prints win announcement
             return True
         return False
-
-    def get_player(self, name):
-        """returns a Player from a given name"""
-        if name == self._player1.get_name():
-            return self._player1
-        if name == self._player2.get_name():
-            return self._player2
-
-    def get_other_player(self, name):
-        """returns the opposing Player from a given name"""
-        if name == self._player1.get_name():
-            return self._player2
-        if name == self._player2.get_name():
-            return self._player1
 
     # ------ start error handling for make_move --------------------------
     def marble_color_check(self, name, position):
@@ -307,7 +310,6 @@ class KubaGame:
 
         # otherwise, input is validated
         return True
-
     # ------ end error handling for make_move --------------------------
 
 
@@ -352,28 +354,30 @@ class GameBoard:
 
         if direction == 'R':
             while self._board[position[0]][position[1] + counter] in ['B', 'W', 'R']:
-                self._board[position[0]][position[1] + counter] = self._marble_row.dequeue()       # dequeue the val into current
-                self._marble_row.enqueue(self._board[position[0]][position[1] + counter + 1])       # queue the next val
+                # dequeue the val into current
+                self._board[position[0]][position[1] + counter] = self._marble_row.dequeue()
+                # enqueue the next val
+                self._marble_row.enqueue(self._board[position[0]][position[1] + counter + 1])
                 counter += 1
             self._board[position[0]][position[1] + counter] = self._marble_row.dequeue()
 
         if direction == 'L':
             while self._board[position[0]][position[1] - counter] in ['B', 'W', 'R']:
-                self._board[position[0]][position[1] - counter] = self._marble_row.dequeue()       # dequeue the val into current
+                self._board[position[0]][position[1] - counter] = self._marble_row.dequeue()
                 self._marble_row.enqueue(self._board[position[0]][position[1] - (counter + 1)])
                 counter += 1
             self._board[position[0]][position[1] - counter] = self._marble_row.dequeue()
 
         if direction == 'B':
             while self._board[position[0] + counter][position[1]] in ['B', 'W', 'R']:
-                self._board[position[0] + counter][position[1]] = self._marble_row.dequeue()       # dequeue the val into current
-                self._marble_row.enqueue(self._board[position[0] + counter + 1][position[1]])       # queue the next val
+                self._board[position[0] + counter][position[1]] = self._marble_row.dequeue()
+                self._marble_row.enqueue(self._board[position[0] + counter + 1][position[1]])
                 counter += 1
             self._board[position[0] + counter][position[1]] = self._marble_row.dequeue()
 
         if direction == 'F':
             while self._board[position[0] - counter][position[1]] in ['B', 'W', 'R']:
-                self._board[position[0] - counter][position[1]] = self._marble_row.dequeue()       # dequeue the val into current
+                self._board[position[0] - counter][position[1]] = self._marble_row.dequeue()
                 self._marble_row.enqueue(self._board[position[0] - (counter + 1)][position[1]])
                 counter += 1
             self._board[position[0] - counter][position[1]] = self._marble_row.dequeue()
@@ -450,11 +454,6 @@ class Queue:
         self.list = []
 
 
-
-
-
-
-
 game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
 game.display_board()
 print("1", game.make_move('PlayerB', (0, 5), 'B'))
@@ -470,13 +469,6 @@ print("4", game.make_move('PlayerA', (6, 5), 'R'))
 game.display_board()
 print(game.get_current_turn())
 
-
-
-
-
-
-
-
 # print("2", game.make_move('PlayerA', (2, 6), 'x'))
 # print("3", game.make_move('PlayerA', (0, 6), 'F'))
 # print("4", game.make_move('PlayerB', (0, 6), 'B'))
@@ -491,17 +483,3 @@ print(game.get_current_turn())
 #
 # game.display_board()
 # print(game.get_marble_count())
-
-
-
-
-
-
-
-
-
-
-
-
-
-
