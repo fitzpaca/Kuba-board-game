@@ -4,7 +4,6 @@
 #               called Kuba.
 import copy
 
-
 class KubaGame:
     """represents the Kuba board game"""
     def __init__(self, player1, player2):
