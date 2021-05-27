@@ -2,6 +2,7 @@
 # Date: 05/20/21
 # Description: This program lets two players participate in a virtual board game
 #       called Kuba.
+import copy
 
 class KubaGame:
     """represents the Kuba board game"""
@@ -19,6 +20,7 @@ class KubaGame:
         # display board by printing each row as a string w tiles separated by spaces
         for row in self._board.get_board():
             print("  ".join(x for x in row))
+
 
     def get_current_turn(self):
         """Returns the players name whose turn it is.
@@ -405,7 +407,6 @@ print("3", game.make_move('PlayerB', (1, 5), 'B'))
 game.display_board()
 print("4", game.make_move('PlayerA', (4, 6), 'L'))
 game.display_board()
-game.set_winner('PlayerA')
 print("5", game.make_move('PlayerB', (2, 5), 'B'))
 game.display_board()
 print(game.get_marble_count())
