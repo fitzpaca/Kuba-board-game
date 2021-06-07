@@ -659,32 +659,32 @@ class Queue:
         self.list = []
 
 
-game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
-print("Board start (below)")
-game.display_board()
-
-print(game.get_marble((0, 0)))
-
-
-print("1 (below)", game.make_move('PlayerB', (0, 5), 'B'))
-game.display_board()
-print("2 (below)", game.make_move('PlayerA', (0, 1), 'B'))
-game.display_board()
-print("3 (below)", game.make_move('PlayerB', (1, 5), 'B'))
-game.display_board()
-print("4 (below)", game.make_move('PlayerA', (2, 1), 'R'))
-game.display_board()
-# print(game.get_current_turn())
-print("5 (below)", game.make_move('PlayerB', (3, 5), 'L'))
-game.display_board()
-print("6 (below)", game.make_move('PlayerA', (0, 0), 'B'))
-game.display_board()
-print("7 (below)", game.make_move('PlayerB', (2, 6), 'L'))
-game.display_board()
-print("8 (below)", game.make_move('PlayerA', (2, 0), 'R'))
-game.display_board()
-print("9 (below)", game.make_move('PlayerB', (2, 6), 'L'))
-game.display_board()
+# game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
+# print("Board start (below)")
+# game.display_board()
+#
+# print(game.get_marble((0, 0)))
+#
+#
+# print("1 (below)", game.make_move('PlayerB', (0, 5), 'B'))
+# game.display_board()
+# print("2 (below)", game.make_move('PlayerA', (0, 1), 'B'))
+# game.display_board()
+# print("3 (below)", game.make_move('PlayerB', (1, 5), 'B'))
+# game.display_board()
+# print("4 (below)", game.make_move('PlayerA', (2, 1), 'R'))
+# game.display_board()
+# # print(game.get_current_turn())
+# print("5 (below)", game.make_move('PlayerB', (3, 5), 'L'))
+# game.display_board()
+# print("6 (below)", game.make_move('PlayerA', (0, 0), 'B'))
+# game.display_board()
+# print("7 (below)", game.make_move('PlayerB', (2, 6), 'L'))
+# game.display_board()
+# print("8 (below)", game.make_move('PlayerA', (2, 0), 'R'))
+# game.display_board()
+# print("9 (below)", game.make_move('PlayerB', (2, 6), 'L'))
+# game.display_board()
 #
 #
 # # Display status of game:
