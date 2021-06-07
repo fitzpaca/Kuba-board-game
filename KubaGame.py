@@ -298,22 +298,22 @@ class KubaGame:
         """
         # if the direction the player wants to push is Left, check one tile to the right for empty or tray
         if direction == "L" \
-                and (self._board.get_tile((position[0], position[1] + 1)) == ' '
+                and (self._board.get_tile((position[0], position[1] + 1)) == 'X'
                      or self._board.get_tile((position[0], position[1] + 1)) == '-'
                      or self._board.get_tile((position[0], position[1] + 1)) == '|'):
             pass
         elif direction == "R" \
-                and (self._board.get_tile((position[0], position[1] - 1)) == ' '
+                and (self._board.get_tile((position[0], position[1] - 1)) == 'X'
                      or self._board.get_tile((position[0], position[1] - 1)) == '-'
                      or self._board.get_tile((position[0], position[1] - 1)) == '|'):
             pass
         elif direction == "B" \
-                and (self._board.get_tile((position[0] - 1, position[1])) == ' '
+                and (self._board.get_tile((position[0] - 1, position[1])) == 'X'
                      or self._board.get_tile((position[0] - 1, position[1])) == '-'
                      or self._board.get_tile((position[0] - 1, position[1])) == '|'):
             pass
         elif direction == "F" \
-                and (self._board.get_tile((position[0] + 1, position[1])) == ' '
+                and (self._board.get_tile((position[0] + 1, position[1])) == 'X'
                      or self._board.get_tile((position[0] + 1, position[1])) == '-'
                      or self._board.get_tile((position[0] + 1, position[1])) == '|'):
             pass
@@ -458,13 +458,13 @@ class GameBoard:
         """
         self._board = []
         self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
-        self._board.append(['|', 'W', 'W', ' ', ' ', ' ', 'B', 'B', '|'])     # initialize row 0...
-        self._board.append(['|', 'W', 'W', ' ', 'R', ' ', 'B', 'B', '|'])
-        self._board.append(['|', ' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
-        self._board.append(['|', ' ', 'R', 'R', 'R', 'R', 'R', ' ', '|'])
-        self._board.append(['|', ' ', ' ', 'R', 'R', 'R', ' ', ' ', '|'])
-        self._board.append(['|', 'B', 'B', ' ', 'R', ' ', 'W', 'W', '|'])
-        self._board.append(['|', 'B', 'B', ' ', ' ', ' ', 'W', 'W', '|'])     # ...initialize row 6
+        self._board.append(['|', 'W', 'W', 'X', 'X', 'X', 'B', 'B', '|'])     # initialize row 0...
+        self._board.append(['|', 'W', 'W', 'X', 'R', 'X', 'B', 'B', '|'])
+        self._board.append(['|', 'X', 'X', 'R', 'R', 'R', 'X', 'X', '|'])
+        self._board.append(['|', 'X', 'R', 'R', 'R', 'R', 'R', 'X', '|'])
+        self._board.append(['|', 'X', 'X', 'R', 'R', 'R', 'X', 'X', '|'])
+        self._board.append(['|', 'B', 'B', 'X', 'R', 'X', 'W', 'W', '|'])
+        self._board.append(['|', 'B', 'B', 'X', 'X', 'X', 'W', 'W', '|'])     # ...initialize row 6
         self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
         self._marble_row = Queue()
 
@@ -502,7 +502,7 @@ class GameBoard:
         """
         # initialize the queue with an empty space and then first tile
         self._marble_row.clear()
-        self._marble_row.enqueue(' ')
+        self._marble_row.enqueue('X')
         self._marble_row.enqueue(self._board[position[0]][position[1]])
         counter = 0         # counter points at the first current tile
 
@@ -646,67 +646,75 @@ class Queue:
         self.list = []
 
 
-game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
-print("Board start (below)")
-game.display_board()
-print("1 (below)", game.make_move('PlayerB', (0, 5), 'B'))
-game.display_board()
-print("2 (below)", game.make_move('PlayerA', (0, 1), 'B'))
-game.display_board()
-print("3 (below)", game.make_move('PlayerB', (1, 5), 'B'))
-game.display_board()
-print("4 (below)", game.make_move('PlayerA', (2, 1), 'R'))
-game.display_board()
-# print(game.get_current_turn())
-print("5 (below)", game.make_move('PlayerB', (3, 5), 'L'))
-game.display_board()
-print(game.get_marble_count())
-print(game.get_current_turn())
-print("6 (below)", game.make_move('PlayerA', (2, 2), 'R'))
-game.display_board()
-print("7 (below)", game.make_move('PlayerB', (3, 4), 'L'))
-game.display_board()
-print("9 (below)", game.make_move('PlayerA', (2, 3), 'R'))
-game.display_board()
-print("10 (below)", game.make_move('PlayerB', (3, 3), 'L'))
-game.display_board()
-print("11 (below)", game.make_move('PlayerA', (2, 4), 'R'))
-game.display_board()
-print("12 (below)", game.make_move('PlayerB', (3, 2), 'L'))
-game.display_board()
-print("13 (below)", game.make_move('PlayerA', (2, 5), 'R'))
-game.display_board()
-print("14 (below)", game.make_move('PlayerB', (3, 1), 'L'))
-game.display_board()
-print("15 (below)", game.make_move('PlayerA', (2, 6), 'F'))
-game.display_board()
-print("16 (below)", game.make_move('PlayerB', (6, 1), 'F'))
-game.display_board()
-print("17 (below)", game.make_move('PlayerA', (1, 6), 'F'))
-game.display_board()
-print("18 (below)", game.make_move('PlayerB', (4, 1), 'R'))
-game.display_board()
-print("19 (below)", game.make_move('PlayerA', (0, 6), 'B'))
-game.display_board()
-print("20 (below)", game.make_move('PlayerB', (4, 2), 'R'))
-game.display_board()
-print("21 (below)", game.make_move('PlayerA', (1, 0), 'R'))
-game.display_board()
-print("22 (below)", game.make_move('PlayerB', (4, 3), 'R'))
-game.display_board()
-print("23 (below)", game.make_move('PlayerA', (5, 6), 'L'))
-game.display_board()
-print("24 (below)", game.make_move('PlayerB', (4, 4), 'R'))
-game.display_board()
-print("23 (below)", game.make_move('PlayerA', (5, 6), 'L'))
-game.display_board()
+# game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
+# print("Board start (below)")
+# game.display_board()
+# print("1 (below)", game.make_move('PlayerB', (0, 5), 'B'))
+# game.display_board()
+# print("2 (below)", game.make_move('PlayerA', (0, 1), 'B'))
+# game.display_board()
+# print("3 (below)", game.make_move('PlayerB', (1, 5), 'B'))
+# game.display_board()
+# print("4 (below)", game.make_move('PlayerA', (2, 1), 'R'))
+# game.display_board()
+# # print(game.get_current_turn())
+# print("5 (below)", game.make_move('PlayerB', (3, 5), 'L'))
+# game.display_board()
+# print("6 (below)", game.make_move('PlayerA', (0, 0), 'B'))
+# game.display_board()
+# print("7 (below)", game.make_move('PlayerB', (2, 6), 'L'))
+# game.display_board()
+# print("8 (below)", game.make_move('PlayerA', (2, 0), 'R'))
+# game.display_board()
+# print("9 (below)", game.make_move('PlayerB', (2, 6), 'L'))
+# game.display_board()
+#
+#
+# # Display status of game:
+# print('Current turn: ', game.get_current_turn())
+# print('Marble count (W, B, R):', game.get_marble_count())
+# print('PlayerA captured reds:', game.get_player('PlayerA').get_captured())
+# print('PlayerB captured reds:', game.get_player('PlayerB').get_captured())
+# print('Winner: ', game.get_winner())
 
-# Display status of game:
-print('Current turn: ', game.get_current_turn())
-print('Marble count (W, B, R):', game.get_marble_count())
-print('PlayerA captured reds:', game.get_player('PlayerA').get_captured())
-print('PlayerB captured reds:', game.get_player('PlayerB').get_captured())
-print('Winner: ', game.get_winner())
+
+
+# print("7 (below)", game.make_move('PlayerB', (3, 4), 'L'))
+# game.display_board()
+# print("9 (below)", game.make_move('PlayerA', (2, 3), 'R'))
+# game.display_board()
+# print("10 (below)", game.make_move('PlayerB', (3, 3), 'L'))
+# game.display_board()
+# print("11 (below)", game.make_move('PlayerA', (2, 4), 'R'))
+# game.display_board()
+# print("12 (below)", game.make_move('PlayerB', (3, 2), 'L'))
+# game.display_board()
+# print("13 (below)", game.make_move('PlayerA', (2, 5), 'R'))
+# game.display_board()
+# print("14 (below)", game.make_move('PlayerB', (3, 1), 'L'))
+# game.display_board()
+# print("15 (below)", game.make_move('PlayerA', (2, 6), 'F'))
+# game.display_board()
+# print("16 (below)", game.make_move('PlayerB', (6, 1), 'F'))
+# game.display_board()
+# print("17 (below)", game.make_move('PlayerA', (1, 6), 'F'))
+# game.display_board()
+# print("18 (below)", game.make_move('PlayerB', (4, 1), 'R'))
+# game.display_board()
+# print("19 (below)", game.make_move('PlayerA', (0, 6), 'B'))
+# game.display_board()
+# print("20 (below)", game.make_move('PlayerB', (4, 2), 'R'))
+# game.display_board()
+# print("21 (below)", game.make_move('PlayerA', (1, 0), 'R'))
+# game.display_board()
+# print("22 (below)", game.make_move('PlayerB', (4, 3), 'R'))
+# game.display_board()
+# print("23 (below)", game.make_move('PlayerA', (5, 6), 'L'))
+# game.display_board()
+# print("24 (below)", game.make_move('PlayerB', (4, 4), 'R'))
+# game.display_board()
+# print("23 (below)", game.make_move('PlayerA', (5, 6), 'L'))
+# game.display_board()
 
 
 # print("2", game.make_move('PlayerA', (2, 6), 'x'))
