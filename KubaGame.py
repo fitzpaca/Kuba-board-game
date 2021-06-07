@@ -544,7 +544,10 @@ class GameBoard:
         Parameters: tile position (tuple)
         Returns: status of given tile (string)
         """
-        return self._board[position[0]][position[1]]
+        # convert input position to actual game board object position
+        board_pos = (position[0] + 1, position[1] + 1)
+
+        return self._board[board_pos[0]][board_pos[1]]
 
     def get_marble_count(self):
         """
@@ -649,6 +652,10 @@ class Queue:
 # game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
 # print("Board start (below)")
 # game.display_board()
+#
+# print(game.get_marble((0, 0)))
+
+
 # print("1 (below)", game.make_move('PlayerB', (0, 5), 'B'))
 # game.display_board()
 # print("2 (below)", game.make_move('PlayerA', (0, 1), 'B'))
