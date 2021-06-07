@@ -6,7 +6,17 @@ import copy
 
 
 class KubaGame:
-    """represents the Kuba board game"""
+    """
+    This class represents the Kuba board game and playing functionalities.
+    This class communicates with the following classes:
+     - GameBoard: KubaGame uses GameBoard to initialize and change the physical
+            board with marbles on it. It also returns important information
+            about the status of the board to KubaGame.
+     - Player: KubaGame uses Player object to initialize and return information about
+            players 1 and 2.
+     - InvalidMoveError: KubaGame uses InvalidMoveError to pass an error when a player
+            inputs an invalid move.
+     """
     def __init__(self, player1, player2):
         """initializes variables for the Board"""
         self._player1 = Player(player1[0], player1[1])
@@ -18,52 +28,91 @@ class KubaGame:
         self._board_prev = copy.deepcopy(self._board.get_board())
 
     def display_board(self):
-        """displays the game board"""
+        """
+        Purpose: initializes variables for the game
+        Parameters: Player object (player1), Player object (player2)
+        Returns: N/A
+        """
         # display board by printing each row as a string w tiles separated by spaces
         for row in self._board.get_board():
             print("  ".join(x for x in row))
 
     def display_prev(self):
+        """ *********  delete before turning in  ********* """
         for row in self._board_prev:
             print("  ".join(x for x in row))
 
     def set_board_prev(self, board):
-        """sets the board history to store the previous valid board"""
+        """
+        Purpose: stores a deep copy of the previous valid playing board
+            object for use in previous board position checks
+        Parameters: GameBoard object
+        Returns: N/A
+        """
         self._board_prev = copy.deepcopy(board)
 
     def get_player(self, name):
-        """returns a Player from a given name"""
+        """
+        Purpose: returns the player object for a given player name
+        Parameters: name (string)
+        Returns: Player object
+        """
         if name == self._player1.get_name():
             return self._player1
         if name == self._player2.get_name():
             return self._player2
 
     def get_other_player(self, name):
-        """returns the opposing Player from a given name"""
+        """
+        Purpose: returns the opposing player object for a given player name
+        Parameters: name (string)
+        Returns: Player object
+        """
         if name == self._player1.get_name():
             return self._player2
         if name == self._player2.get_name():
             return self._player1
 
     def get_current_turn(self):
-        """Returns the players name whose turn it is.
-         Returns none if nobody has played yet."""
+        """
+        Purpose: Returns the current Player whose turn it is.
+            Returns None if the game has not been started.
+        Parameters: N/A
+        Returns: a Player or None
+        """
         return self._turn
 
     def set_current_turn(self, name):
-        """updates current turn"""
+        """
+        Purpose: Updates the current turn
+        Parameters: player name (string)
+        Returns: N/A
+        """
         self._turn = name
 
     def get_marble_count(self):
-        """returns the marble count as a tuple (White, Black, Red)"""
+        """
+        Purpose: Returns the marble count on the board as a tuple (# white marbles, # black, # red)
+        Parameters: N/A
+        Returns: marble count as a tuple
+        """
         return self._board.get_marble_count()
 
     def get_captured(self, name):
-        """returns the number of captured red marbles by the given player name"""
+        """
+        Purpose: returns the number of captured red marbles by the given player
+        Parameters: player name (string)
+        Returns: a Player's number of captured red marbles
+        """
         return self.get_player(name).get_captured()
 
     def update_captured(self, name, reds_before):
-        """checks if a player captured a red marble on their turn. Calls add_captured if so."""
+        """
+        Purpose: checks if a player captured a red marble on their turn.
+            If so, adds the red to the Player's capture tally
+        Parameters: player name (string), red marbles captured before this turn (number)
+        Returns: None if there were no reds captured.
+        """
         reds_after = self.get_marble_count()[2]
         if reds_before == reds_after:
             return
@@ -71,12 +120,20 @@ class KubaGame:
         self.get_player(name).add_captured()
 
     def get_winner(self):
-        """returns the winner of the game. returns None if game is not over."""
+        """
+        Purpose: returns the winner of the game. returns None if game is not over
+        Parameters: N/A
+        Returns: winning Player or None
+        """
         return self._winner
 
     def check_for_winner(self):
-        """checks if the game has been won by a player capturing 7 reds or 7 opposing marbles.
-        Returns True if a player has won the game. False otherwise."""
+        """
+        Purpose: checks if the game has been won by a player capturing 7 reds or 7 opposing marbles.
+            Returns True if a player has won the game. False otherwise.
+        Parameters: N/A
+        Returns: True or False
+        """
         if self._player1.get_captured() == 7:
             self.set_winner(self._player1.get_name())
             print(self._player1.get_name(), "captured 7 reds and won the game!")
@@ -96,16 +153,28 @@ class KubaGame:
             print(self._player2.get_name(), "has no remaining marbles. Other player wins!")
 
     def set_winner(self,  name):
-        """sets the winner of the game to a player's name"""
+        """
+        Purpose: sets the winner of the game to a player's name
+        Parameters: Player name (string)
+        Returns: N/A
+        """
         self._winner = name
 
     def get_marble(self, board_pos):
-        """returns the color of marble at a given position. returns 'X' if tile is empty."""
+        """
+        Purpose: returns the color of marble at a given position. returns 'X' if tile is empty.
+        Parameters: board tile coordinates as a tuple
+        Returns: tile status as a string ('X', 'W', 'B', 'R')
+        """
         return self._board.get_tile(board_pos)
 
     def make_hyp_move(self, coordinates, direction):
-        """makes a hypothetical move and then compares it with the previous board
-         to check for invalid board repeat moves"""
+        """
+        Purpose: makes a hypothetical move and then compares it with the previous board
+            to check for invalid board repeat moves
+        Parameters: position (tuple) and direction ('F', 'B', 'L', or 'R') of hypothetical marble push
+        Returns: GameBoard object with hyp. move completed
+        """
         # make a deep copy of the board object
         board_copy = copy.deepcopy(self._board)
 
@@ -115,8 +184,13 @@ class KubaGame:
         return board_copy
 
     def make_move(self, player_name, coordinates, direction):
-        """makes a move on the game board"""
-
+        """
+        Purpose: handles a player attempting to make a move on the game board with data validation.
+            Data validation handled and described in valid_make_move() method.
+        Parameters: the Player's name attempting the move (string), position (tuple) of marble to push,
+            and the direction of the push ('F', 'B', 'L', or 'R')
+        Returns: True if the move was validated and successful. False otherwise.
+        """
         # convert input position to actual game board object position
         board_pos = (coordinates[0] + 1, coordinates[1] + 1)
 
@@ -150,7 +224,12 @@ class KubaGame:
 
     # ------ start error handling for make_move --------------------------
     def marble_color_check(self, name, position):
-        """data validation for tile color player is attempting to move"""
+        """
+        Purpose: data validation for tile color player is attempting to move.
+            Raises InvalidMoveError if data is not valid.
+        Parameters: Player name (string) and tile position (tuple)
+        Returns: N/A
+        """
         marble_on_tile = self.get_marble(position)
         player_attempting = self.get_player(name).get_color()
         if player_attempting == marble_on_tile:
@@ -160,7 +239,12 @@ class KubaGame:
 
     @staticmethod
     def direction_check(direction):
-        """data validation for make_move direction input"""
+        """
+        Purpose: data validation for the direction string the player inputs
+            Raises InvalidMoveError if data is not valid.
+        Parameters: Direction (string)
+        Returns: N/A
+        """
         if direction == 'F' or direction == 'B' or direction == 'L' or direction == 'R':
             pass
         else:
@@ -168,21 +252,36 @@ class KubaGame:
 
     @staticmethod
     def position_check(board_pos):
-        """data validation for make_move position input"""
+        """
+        Purpose: data validation for the position tuple the player inputs
+            Raises InvalidMoveError if data is not valid.
+        Parameters: tile position (tuple)
+        Returns: N/A
+        """
         if board_pos[0] in range(1, 8) and board_pos[1] in range(1, 8):
             pass
         else:
             raise InvalidMoveError
 
     def turn_check(self, name):
-        """data validation to make sure that it is the player's turn who is attempting the move"""
+        """
+        Purpose: data validation to make sure that it is the player's turn to make the move
+            Raises InvalidMoveError if data is not valid.
+        Parameters: Player's name (string)
+        Returns: N/A
+        """
         if name == self.get_current_turn() or self.get_current_turn() is None:
             pass
         else:
             raise InvalidMoveError
 
     def winner_check(self):
-        """data validation that the game has not been won already"""
+        """
+        Purpose: data validation to make sure the game has not already been won
+            Raises InvalidMoveError if data is not valid.
+        Parameters: N/A
+        Returns: N/A
+        """
         self.check_for_winner()
         if self._winner is None:
             pass
@@ -190,7 +289,13 @@ class KubaGame:
             raise InvalidMoveError
 
     def push_check(self, position, direction):
-        """data validation that the player is legally allowed to push the given marble in the direction given"""
+        """
+        Purpose: handles data validation that the player is legally allowed
+                  to push the given marble in the direction given.
+            Raises InvalidMoveError if data is not valid.
+        Parameters: tile position (tuple) and direction (string)
+        Returns: N/A
+        """
         # if the direction the player wants to push is Left, check one tile to the right for empty or tray
         if direction == "L" \
                 and (self._board.get_tile((position[0], position[1] + 1)) == ' '
@@ -216,7 +321,13 @@ class KubaGame:
             raise InvalidMoveError
 
     def history_check(self, board_pos, direction):
-        """check that this move will not result in the identical board setup to the beginning of last turn"""
+        """
+        Purpose: handles data validation that this move will not result in an identical board setup to
+                  the board setup at the beginning of last turn.
+            Raises InvalidMoveError if data is not valid.
+        Parameters: tile position (tuple) and direction (string)
+        Returns: N/A
+        """
         hyp_board_object = self.make_hyp_move(board_pos, direction)
         hyp_board = hyp_board_object.get_board()
 
@@ -226,7 +337,13 @@ class KubaGame:
         pass
 
     def self_capture_check(self, name, board_pos, direction):
-        """check that this move will not result in a player pushing one of his own marbles of the edge"""
+        """
+        Purpose: handles data validation that this move will not result in a player
+                  pushing one of his own marbles off the edge.
+            Raises InvalidMoveError if data is not valid.
+        Parameters: Player name (string), tile position (tuple), direction (string)
+        Returns: N/A
+        """
         if name == self._player1.get_name():
             # store the number of player1's marbles before the turn
             marbles_before = self._board.get_marble_count()[0]
@@ -251,7 +368,17 @@ class KubaGame:
         pass
 
     def valid_make_move(self, name, position, direction):
-        """handles data validation for make_move function"""
+        """
+        Purpose: handles all data validation for the make_move method.
+            Returns False if the move is not allowed according to the game rules
+             if or any parameter for make_move is invalid.
+            Returns True if valid move.
+            Practically, this function calls each specific data validation method and if
+             any of them raise the InvalidMoveError, it returns False. Otherwise, if the data
+             passes all data validation, it returns True.
+        Parameters: Player name (string), tile position (tuple), direction (string)
+        Returns: True or False
+        """
         # data validation for game already won
         try:
             self.winner_check()
@@ -314,9 +441,21 @@ class KubaGame:
 
 
 class GameBoard:
-    """represents the playing board"""
+    """
+    This class represents the physical playing board and handles the processing
+        and passing of information relevant to the board positions and marbles.
+    This class communicates with the following classes:
+     - Queue: GameBoard uses the Queue class to enqueue and dequeue values in the
+            push_marble_q method
+    """
     def __init__(self):
-        """initialize the board to start positions"""
+        """
+        Purpose: initialize the board to starting marble positions
+                  with a perimeter tray.
+            Initialize the row checker as a Queue.
+        Parameters: N/A
+        Returns: N/A
+        """
         self._board = []
         self._board.append(['-', '-', '-', '-', '-', '-', '-', '-', '-'])
         self._board.append(['|', 'W', 'W', ' ', ' ', ' ', 'B', 'B', '|'])     # initialize row 0...
@@ -330,7 +469,11 @@ class GameBoard:
         self._marble_row = Queue()
 
     def clear_tray(self):
-        """clears the game board tray"""
+        """
+        Purpose: clears the game board tray
+        Parameters: N/A
+        Returns: N/A
+        """
         self._board[0] = ['-', '-', '-', '-', '-', '-', '-', '-', '-']
         self._board[8] = ['-', '-', '-', '-', '-', '-', '-', '-', '-']
         index = 0
@@ -341,11 +484,22 @@ class GameBoard:
             index += 1
 
     def get_board(self):
-        """returns the game board"""
+        """
+        Purpose: getter method for the game board data member
+        Parameters: N/A
+        Returns: game board (list)
+        """
         return self._board
 
     def push_marble_q(self, position, direction):
-        """pushes a the marble in the given position in the given direction, pushing all marbles in front of it too"""
+        """
+        Purpose: pushes a the marble in the given position in the given direction,
+                  pushing all marbles in front of it too
+            Practically, this method uses the marble_row Queue to "push" each marble forward by
+             storing the next marble then replacing it with the previous marble using the Queue.
+        Parameters: tile position (tuple) and direction (string)
+        Returns: None
+        """
         # initialize the queue with an empty space and then first tile
         self._marble_row.clear()
         self._marble_row.enqueue(' ')
@@ -385,11 +539,19 @@ class GameBoard:
         return
 
     def get_tile(self, position):
-        """returns the status of a tile"""
+        """
+        Purpose: getter method for a given tile's status
+        Parameters: tile position (tuple)
+        Returns: status of given tile (string)
+        """
         return self._board[position[0]][position[1]]
 
     def get_marble_count(self):
-        """tallies the count of marbles on the board by color"""
+        """
+        Purpose: getter method for the number of each marble on the board
+        Parameters: N/A
+        Returns: count of each marble on the board (tuple) (# white marbles, # black, # red)
+        """
         red_count = 0
         black_count = 0
         white_count = 0
@@ -405,38 +567,68 @@ class GameBoard:
 
 
 class Player:
-    """represents a player with a name and marble color"""
+    """
+    This class represents a Player in the KubaGame with a name, color, and # of reds captured.
+        It also handles returning and updating this information when necessary.
+    This class does not communicate with other classes. It produces a sovereign player
+        object. It is used by the KubaGame class though.
+    """
     def __init__(self, name, color):
-        """initializes members for Player class"""
+        """
+        Purpose: init method for Player class data members
+        Parameters: Player name (string) and Player's marble color (string)
+        Returns: N/A
+        """
         self._name = name
         self._color = color
         self._captured = 0      # initialize a player's captured count to 0
 
     def get_name(self):
-        """returns player's name"""
+        """
+        Purpose: getter method for Player's name
+        Parameters: N/A
+        Returns: Player's name (string)
+        """
         return self._name
 
     def get_color(self):
-        """returns a player's marble color"""
+        """
+        Purpose: getter method for Player's marble color
+        Parameters: N/A
+        Returns: Player's marble color (string)
+        """
         return self._color
 
     def get_captured(self):
-        """returns a player's number of captured red marbles"""
+        """
+        Purpose: getter method for Player's number of captured red marbles
+        Parameters: N/A
+        Returns: Player's number of captured red marbles
+        """
         return self._captured
 
     def add_captured(self):
-        """adds a captured red marble to the player's count of captures"""
+        """
+        Purpose: adds a captured red marble to the player's count of captured reds
+        Parameters: N/A
+        Returns: N/A
+        """
         self._captured += 1
 
 
 class InvalidMoveError(Exception):
-    """exception for invalid direction input"""
+    """
+    This class is an exception error for invalid player inputs.
+    This class is used by the KubaGame class, but it does not communicate with
+        any other classes itself.
+    """
     pass
 
 
 class Queue:
     """
-    An implementation of the Queue ADT that uses Python's built-in lists
+    This class is used to pass methods for data structure (list) manipulations.
+    It does not communicate with other classes, but it is used by the GameBoard class.
         ** referenced from Module 7 **
     """
     def __init__(self):
