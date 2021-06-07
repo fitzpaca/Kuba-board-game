@@ -647,13 +647,13 @@ class Queue:
         self.list = []
 
 
-game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
-print("Board start (below)")
-game.display_board()
-
-print(game.get_marble((0, 0)))
-
-
+# game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
+# print("Board start (below)")
+# game.display_board()
+#
+# print(game.get_marble((0, 0)))
+#
+#
 # print("1 (below)", game.make_move('PlayerB', (0, 5), 'B'))
 # game.display_board()
 # print("2 (below)", game.make_move('PlayerA', (0, 1), 'B'))
@@ -681,8 +681,6 @@ print(game.get_marble((0, 0)))
 # print('PlayerA captured reds:', game.get_player('PlayerA').get_captured())
 # print('PlayerB captured reds:', game.get_player('PlayerB').get_captured())
 # print('Winner: ', game.get_winner())
-
-
 
 # print("7 (below)", game.make_move('PlayerB', (3, 4), 'L'))
 # game.display_board()
