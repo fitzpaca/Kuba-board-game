@@ -166,6 +166,18 @@ class KubaGame:
         Parameters: board tile coordinates as a tuple
         Returns: tile status as a string ('X', 'W', 'B', 'R')
         """
+        # convert input position to actual game board object position
+        board_pos = (board_pos[0] + 1, board_pos[1] + 1)
+
+        return self._board.get_tile(board_pos)
+
+    def get_tile(self, board_pos):
+        """
+        Purpose: returns the tile at a given position.
+        returns 'X' if tile is empty or '-' or.
+        Parameters: board tile coordinates as a tuple
+        Returns: tile status as a string ('X', 'W', 'B', 'R', '-', '|')
+        """
         return self._board.get_tile(board_pos)
 
     def make_hyp_move(self, coordinates, direction):
@@ -230,7 +242,7 @@ class KubaGame:
         Parameters: Player name (string) and tile position (tuple)
         Returns: N/A
         """
-        marble_on_tile = self.get_marble(position)
+        marble_on_tile = self.get_tile(position)
         player_attempting = self.get_player(name).get_color()
         if player_attempting == marble_on_tile:
             pass
@@ -647,32 +659,32 @@ class Queue:
         self.list = []
 
 
-# game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
-# print("Board start (below)")
-# game.display_board()
-#
-# print(game.get_marble((0, 0)))
-#
-#
-# print("1 (below)", game.make_move('PlayerB', (0, 5), 'B'))
-# game.display_board()
-# print("2 (below)", game.make_move('PlayerA', (0, 1), 'B'))
-# game.display_board()
-# print("3 (below)", game.make_move('PlayerB', (1, 5), 'B'))
-# game.display_board()
-# print("4 (below)", game.make_move('PlayerA', (2, 1), 'R'))
-# game.display_board()
-# # print(game.get_current_turn())
-# print("5 (below)", game.make_move('PlayerB', (3, 5), 'L'))
-# game.display_board()
-# print("6 (below)", game.make_move('PlayerA', (0, 0), 'B'))
-# game.display_board()
-# print("7 (below)", game.make_move('PlayerB', (2, 6), 'L'))
-# game.display_board()
-# print("8 (below)", game.make_move('PlayerA', (2, 0), 'R'))
-# game.display_board()
-# print("9 (below)", game.make_move('PlayerB', (2, 6), 'L'))
-# game.display_board()
+game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
+print("Board start (below)")
+game.display_board()
+
+print(game.get_marble((0, 0)))
+
+
+print("1 (below)", game.make_move('PlayerB', (0, 5), 'B'))
+game.display_board()
+print("2 (below)", game.make_move('PlayerA', (0, 1), 'B'))
+game.display_board()
+print("3 (below)", game.make_move('PlayerB', (1, 5), 'B'))
+game.display_board()
+print("4 (below)", game.make_move('PlayerA', (2, 1), 'R'))
+game.display_board()
+# print(game.get_current_turn())
+print("5 (below)", game.make_move('PlayerB', (3, 5), 'L'))
+game.display_board()
+print("6 (below)", game.make_move('PlayerA', (0, 0), 'B'))
+game.display_board()
+print("7 (below)", game.make_move('PlayerB', (2, 6), 'L'))
+game.display_board()
+print("8 (below)", game.make_move('PlayerA', (2, 0), 'R'))
+game.display_board()
+print("9 (below)", game.make_move('PlayerB', (2, 6), 'L'))
+game.display_board()
 #
 #
 # # Display status of game:
