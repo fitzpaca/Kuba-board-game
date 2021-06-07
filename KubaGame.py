@@ -1,7 +1,7 @@
 # Author: Carl Fitzpatrick
 # Date: 05/20/21
 # Description: This program lets two players participate in a virtual board game
-#               called Kuba.
+#               called Kuba
 import copy
 
 
