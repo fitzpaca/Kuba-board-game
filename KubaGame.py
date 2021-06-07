@@ -140,21 +140,17 @@ class KubaGame:
         """
         if self._player1.get_captured() == 7:
             self.set_winner(self._player1.get_name())
-            # print(self._player1.get_name(), "captured 7 reds and won the game!")
 
         if self._player2.get_captured() == 7:
             self.set_winner(self._player2.get_name())
-            # print(self._player2.get_name(), "captured 7 reds and won the game!")
 
         # if player 1 has no marbles on the board, player 2 wins
         if self.get_marble_count()[0] == 0:
             self.set_winner(self._player2.get_name())
-            # print(self._player1.get_name(), "has no remaining marbles. Other player wins!")
 
         # if player 2 has no marbles on the board, player 1 wins
         if self.get_marble_count()[1] == 0:
             self.set_winner(self._player1.get_name())
-            # print(self._player2.get_name(), "has no remaining marbles. Other player wins!")
 
     def set_winner(self,  name):
         """
@@ -233,7 +229,7 @@ class KubaGame:
             self._board.clear_tray()
 
             # check for game winner after every valid turn
-            self.check_for_winner()     # updates self._winner and prints win announcement
+            self.check_for_winner()     # updates self._winner
             return True
         return False
 
@@ -398,56 +394,48 @@ class KubaGame:
         try:
             self.winner_check()
         except InvalidMoveError:
-            # print("The game has already been won!")
             return False
 
         # data validation for position
         try:
             self.position_check(position)
         except InvalidMoveError:
-            # print("Invalid position input!")
             return False
 
         # data validation for direction
         try:
             self.direction_check(direction)
         except InvalidMoveError:
-            # print("Invalid direction! Must be 'F', 'B', 'L', or 'R'")
             return False
 
         # data validation for current turn
         try:
             self.turn_check(name)
         except InvalidMoveError:
-            # print("It is not your turn!")
             return False
 
         # data validation for marble color
         try:
             self.marble_color_check(name, position)
         except InvalidMoveError:
-            # print("You can only push your own marbles!")
             return False
 
         # data validation for push validity
         try:
             self.push_check(position, direction)
         except InvalidMoveError:
-            # print("There must be an adjacent edge or empty tile to push the marble in that direction!")
             return False
 
         # data validation for a player pushing their own marble off the board
         try:
             self.self_capture_check(name, position, direction)
         except InvalidMoveError:
-            # print("You cannot make a move that pushes your own marble off the board")
             return False
 
         # data validation for board history
         try:
             self.history_check(position, direction)
         except InvalidMoveError:
-            # print("You cannot revert the last player's move to identical board!")
             return False
 
         # otherwise, input is validated
