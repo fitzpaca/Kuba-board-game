@@ -15,7 +15,7 @@ class KubaGame:
      - Player: KubaGame uses Player object to initialize and return information about
             players 1 and 2.
      - InvalidMoveError: KubaGame uses InvalidMoveError to pass an error when a player
-            inputs an invalid move.
+            inputs an invalid move
      """
     def __init__(self, player1, player2):
         """
