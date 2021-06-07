@@ -191,7 +191,7 @@ class KubaGame:
         board_copy = copy.deepcopy(self._board)
 
         # make the hypothetical move on the deep copy
-        board_copy.push_marble_q(coordinates, direction)
+        board_copy.push_marble(coordinates, direction)
 
         return board_copy
 
@@ -216,7 +216,7 @@ class KubaGame:
             reds_before = self.get_marble_count()[2]
 
             # make the move for the current player
-            self._board.push_marble_q(board_pos, direction)
+            self._board.push_marble(board_pos, direction)
 
             # update any reds captured on this turn for the player
             self.update_captured(player_name, reds_before)
@@ -449,7 +449,7 @@ class GameBoard:
         and passing of information relevant to the board positions and marbles.
     This class communicates with the following classes:
      - Queue: GameBoard uses the Queue class to enqueue and dequeue values in the
-            push_marble_q method
+            push_marble method
     """
     def __init__(self):
         """
@@ -494,7 +494,7 @@ class GameBoard:
         """
         return self._board
 
-    def push_marble_q(self, position, direction):
+    def push_marble(self, position, direction):
         """
         Pushes a the marble in the given position in the given direction,
                   pushing all marbles in front of it too
