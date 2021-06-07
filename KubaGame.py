@@ -18,7 +18,11 @@ class KubaGame:
             inputs an invalid move.
      """
     def __init__(self, player1, player2):
-        """initializes variables for the Board"""
+        """
+        Purpose: initializes variables for the game
+        Parameters: Player object (player1), Player object (player2)
+        Returns: N/A
+        """
         self._player1 = Player(player1[0], player1[1])
         self._player2 = Player(player2[0], player2[1])
         self._board = GameBoard()
@@ -29,16 +33,16 @@ class KubaGame:
 
     def display_board(self):
         """
-        Purpose: initializes variables for the game
-        Parameters: Player object (player1), Player object (player2)
-        Returns: N/A
+        Purpose: prints the game board to the console
         """
         # display board by printing each row as a string w tiles separated by spaces
         for row in self._board.get_board():
             print("  ".join(x for x in row))
 
     def display_prev(self):
-        """ *********  delete before turning in  ********* """
+        """
+        Purpose: prints the game board from the previous turn to the console
+        """
         for row in self._board_prev:
             print("  ".join(x for x in row))
 
@@ -229,7 +233,6 @@ class KubaGame:
             self._board.clear_tray()
 
             # check for game winner after every valid turn
-            # (** only here to print out win statement can delete bc its called prior to turn)
             self.check_for_winner()     # updates self._winner and prints win announcement
             return True
         return False
@@ -657,6 +660,3 @@ class Queue:
 
     def clear(self):
         self.list = []
-
-
-
