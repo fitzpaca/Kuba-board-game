@@ -3,6 +3,7 @@
 # Description: This program lets two players participate in a virtual board game
 #               called Kuba
 import copy
+import pygame
 
 
 class KubaGame:
@@ -662,3 +663,4 @@ class Queue:
         Empties the list
         """
         self.list = []
+
