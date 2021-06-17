@@ -25,8 +25,8 @@ game.display_board()
 pygame.init()
 
 # define constants for the screen width and height
-SCREEN_WIDTH = 700
-SCREEN_HEIGHT = 700
+SCREEN_WIDTH = 720
+SCREEN_HEIGHT = 720
 
 # create the screen object
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -34,13 +34,14 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 # tile color RGB combos
 white = (255, 255, 255)
 red = (255, 0, 0)
+black = (0, 0, 0)
 
 # set tile information (coordinates, color)
 tile_x = 0
 tile_y = 0
 tile_color = white
-tile_width = 100
-tile_height = 100
+tile_width = 80
+tile_height = 80
 
 
 
@@ -63,6 +64,9 @@ while running:
     clock.tick(600)
 
     for event in pygame.event.get():
+        # set the background to loaded image
+        screen.blit(image, (0, 0))
+
         # did the user hit a key?
         if event.type == KEYDOWN:
             # if the user presses escape, stop the loop
@@ -73,17 +77,22 @@ while running:
             running = False
 
         # setup the board initially by iterating through rows and columns calling get_marble
-        x_counter = 0
-        y_counter = 0
+        x_counter = 20
+        y_counter = 20
         for row in game.get_board()[1:8]:
             for tile in row[1:8]:
                 pygame.time.wait(10)
-                if x_counter > 600:
-                    x_counter = 0
+                if x_counter > 620:
+                    x_counter = 20
 
                 if tile == 'W':
-                    # print("white tile here", x_counter, ', ', y_counter)
                     pygame.draw.rect(screen, white, pygame.Rect(x_counter, y_counter, tile_width, tile_height))
+
+                if tile == 'R':
+                    pygame.draw.rect(screen, red, pygame.Rect(x_counter, y_counter, tile_width, tile_height))
+
+                if tile == 'B':
+                    pygame.draw.rect(screen, black, pygame.Rect(x_counter, y_counter, tile_width, tile_height))
 
                 # move across the board to the right for every tile
                 #  until it reaches 600, then reset to 0
@@ -91,14 +100,6 @@ while running:
 
             # move down the board row by row until y_counter reaches 600 then stop
             y_counter += 100
-
-
-
-
-
-
-        # set the background to loaded image
-        # screen.blit(image, (0, 0))
 
         # change the color of the square by pressing space bar
         # is_red = True
@@ -120,7 +121,7 @@ while running:
         # if pressed[pygame.K_LEFT]: tile_x -= 100
         # if pressed[pygame.K_RIGHT]: tile_x += 100
 
-        pygame.draw.rect(screen, tile_color, pygame.Rect(tile_x, tile_y, tile_width, tile_height))
+        # pygame.draw.rect(screen, tile_color, pygame.Rect(tile_x, tile_y, tile_width, tile_height))
 
         # reset screen before drawing next rectangle
         # screen.blit(image, (0, 0))
