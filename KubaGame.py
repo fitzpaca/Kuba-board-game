@@ -32,6 +32,10 @@ class KubaGame:
         self._marble_count = (8, 8, 13)     # (W, B, R)
         self._board_prev = copy.deepcopy(self._board.get_board())
 
+    def get_board(self):
+        """returns the game board as a list of lists"""
+        return self._board.get_board()
+
     def display_board(self):
         """
         Prints the game board to the console
