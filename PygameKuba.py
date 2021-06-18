@@ -18,8 +18,6 @@ game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
 print("Board start (below)")
 game.display_board()
 
-game.make_move('PlayerA', (0,0), 'R')
-
 ################################################################################
 # Board Setup #################################################################
 ################################################################################
@@ -51,6 +49,9 @@ marble_select = False
 select_color = None
 marble_color = None
 select_pos = (0, 0)
+
+marble_index = None
+direction = None
 
 
 ################################################################################
@@ -100,14 +101,8 @@ while running:
                 select_color = blue
             pygame.draw.circle(board, select_color, select_pos, tile_radius, 5)
 
-        # did the user hit a key?
-        if event.type == KEYDOWN:
-            # if the user presses escape, stop the loop
-            if event.key == K_ESCAPE:
-                running = False
-
-        # currently allows left click, right click, scroll
-        elif event.type == MOUSEBUTTONDOWN:
+        # let the user select a marble (currently allows left click, right click, scroll)
+        if event.type == MOUSEBUTTONDOWN:
             # store mouse click coordinates
             mx, my = pygame.mouse.get_pos()
 
@@ -133,6 +128,9 @@ while running:
                         marble_color = white
                         select_pos = (x_pos, y_pos)
                         print('W')
+
+
+                    # if the user clicks on a valid marble position and there is a black marble in it
                     elif math.sqrt(mx_sq + my_sq) <= tile_radius and board.get_at((mx, my)) == black:
                         # update the marble index
                         marble_index = (int((y_pos - (tile_radius + tile_spacing)) / (2 * tile_radius + tile_spacing)),
@@ -142,6 +140,35 @@ while running:
                         marble_color = black
                         select_pos = (x_pos, y_pos)
                         print('B')
+
+        # did the user hit a key?
+        elif event.type == KEYDOWN:
+            # if the user presses escape, stop the loop
+            if event.key == K_ESCAPE:
+                running = False
+            # accept keyboard input for marble direction (arrow keys only)
+            elif event.key == K_UP:
+                direction = 'F'
+            elif event.key == K_DOWN:
+                direction = 'B'
+            elif event.key == K_LEFT:
+                direction = 'L'
+            elif event.key == K_RIGHT:
+                direction = 'R'
+
+            # attempt to make a move
+            if game.make_move('PlayerB', marble_index, direction):
+                marble_select = False
+            if game.make_move('PlayerA', marble_index, direction):
+                marble_select = False
+
+
+
+
+
+        # if an arrow key was pressed after a valid selection was made, make a move
+
+        # reset the make move indicator so that it does not repeat
 
 
         elif event.type == pygame.QUIT:
