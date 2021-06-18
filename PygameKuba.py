@@ -28,23 +28,19 @@ game.display_board()
 # initialize all the modules required for PyGame
 pygame.init()
 
+# set tile information (coordinates, color)
+tile_radius = 40
+tile_spacing = 20
+
 # define constants for the screen width and height
-SCREEN_WIDTH = 720
-SCREEN_HEIGHT = 720
+SCREEN_WIDTH = (8 * tile_spacing) + (7 * 2 * tile_radius)
+SCREEN_HEIGHT = (8 * tile_spacing) + (7 * 2 * tile_radius)
 
 # tile color RGB combos
 white = (255, 255, 255)
 red = (255, 0, 0)
 black = (0, 0, 0)
 grey = (192, 192, 192)
-
-# set tile information (coordinates, color)
-tile_x = 0
-tile_y = 0
-tile_color = white
-tile_width = 80
-tile_height = 80
-tile_radius = 40
 
 # create the screen object
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -63,33 +59,6 @@ while running:
 
         # start editing the output window
         pygame.display.set_caption("Kuba Board Game")  # set window title
-
-        # did the user hit a key?
-        if event.type == KEYDOWN:
-            # if the user presses escape, stop the loop
-            if event.key == K_ESCAPE:
-                running = False
-
-        # currently allows left click, right click, scroll
-        elif event.type == MOUSEBUTTONDOWN:
-            # store mouse click coordinates
-            mx, my = pygame.mouse.get_pos()
-
-            for row in range(60, 720, 100):
-                for col in range(60, 720, 100):
-                    x_pos = row
-                    y_pos = col
-
-                    mx_sq = (mx - x_pos)**2
-                    my_sq = (my - y_pos)**2
-
-                    if math.sqrt(mx_sq + my_sq) <= 40:
-                        marble_index = (int((y_pos - 60) / 100), int((x_pos - 60) / 100))
-                        print(marble_index)
-
-
-        elif event.type == pygame.QUIT:
-            running = False
 
         # display all marbles on the board
         x_counter = 60
@@ -114,6 +83,41 @@ while running:
 
             # move down the board row by row until y_counter reaches 600 then stop
             y_counter += 100
+
+        # did the user hit a key?
+        if event.type == KEYDOWN:
+            # if the user presses escape, stop the loop
+            if event.key == K_ESCAPE:
+                running = False
+
+        # currently allows left click, right click, scroll
+        elif event.type == MOUSEBUTTONDOWN:
+            # store mouse click coordinates
+            mx, my = pygame.mouse.get_pos()
+
+            for row in range(tile_radius + tile_spacing, 720, 100):
+                for col in range(60, 720, 100):
+                    x_pos = row
+                    y_pos = col
+
+                    mx_sq = (mx - x_pos) ** 2
+                    my_sq = (my - y_pos) ** 2
+
+                    if math.sqrt(mx_sq + my_sq) <= 40:
+                        marble_index = (int((y_pos - 60) / 100), int((x_pos - 60) / 100))
+
+                        print(marble_index)
+                        # output color of marble:
+                        if screen.get_at((mx, my)) == white:
+                            print('W')
+                        elif screen.get_at((mx, my)) == black:
+                            print('B')
+                        elif screen.get_at((mx, my)) == red:
+                            print('R')
+
+
+        elif event.type == pygame.QUIT:
+            running = False
 
         # call to update output screen
         pygame.display.flip()
