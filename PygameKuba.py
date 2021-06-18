@@ -26,12 +26,12 @@ game.display_board()
 pygame.init()
 
 # set tile information (coordinates, color)
-tile_radius = 50
+tile_radius = 60
 tile_spacing = 5
 
 # define constants for the board width and height
 BOARD_WIDTH = (8 * tile_spacing) + (7 * 2 * tile_radius)
-BOARD_HEIGHT = (8 * tile_spacing) + (7 * 2 * tile_radius)
+BOARD_HEIGHT = (8 * tile_spacing) + (7 * 2 * tile_radius) # + (4 * tile_radius)
 
 # tile color RGB combos
 white = (255, 255, 255)
@@ -68,6 +68,9 @@ while running:
 
         # start editing the output window
         pygame.display.set_caption("Kuba Board Game")  # set window title
+
+        # display current turn
+        # turn_text = pygame.display.set_mode((tile_spacing, 800))
 
         # display all marbles on the board
         x_counter = tile_radius + tile_spacing
@@ -119,7 +122,9 @@ while running:
                     my_sq = (my - y_pos) ** 2
 
                     # if the user clicks on a valid marble position and there is a white marble in it
-                    if math.sqrt(mx_sq + my_sq) <= tile_radius and board.get_at((mx, my)) == white:
+                    if math.sqrt(mx_sq + my_sq) <= tile_radius\
+                            and board.get_at((mx, my)) == white\
+                            and game.get_current_turn() != 'PlayerB':
                         # update the marble index
                         marble_index = (int((y_pos - (tile_radius + tile_spacing)) / (2 * tile_radius + tile_spacing)),
                                         int((x_pos - (tile_radius + tile_spacing)) / (2 * tile_radius + tile_spacing)))
@@ -130,8 +135,12 @@ while running:
                         print('W')
 
 
-                    # if the user clicks on a valid marble position and there is a black marble in it
-                    elif math.sqrt(mx_sq + my_sq) <= tile_radius and board.get_at((mx, my)) == black:
+                    # if the user clicks on a valid marble position
+                    #  and there is a black marble in it
+                    #  and it is their turn
+                    elif math.sqrt(mx_sq + my_sq) <= tile_radius\
+                            and board.get_at((mx, my)) == black\
+                            and game.get_current_turn() != 'PlayerA':
                         # update the marble index
                         marble_index = (int((y_pos - (tile_radius + tile_spacing)) / (2 * tile_radius + tile_spacing)),
                                         int((x_pos - (tile_radius + tile_spacing)) / (2 * tile_radius + tile_spacing)))
@@ -158,9 +167,9 @@ while running:
 
             # attempt to make a move
             if game.make_move('PlayerB', marble_index, direction):
-                marble_select = False
+                marble_select = False              # erase the selection circle
             if game.make_move('PlayerA', marble_index, direction):
-                marble_select = False
+                marble_select = False              # erase the selection circle
 
 
 
