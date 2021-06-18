@@ -1,25 +1,29 @@
 # pygame code for Kuba
 
-import pygame
+################################################################################
+# Imports ######################################################################
+################################################################################
+import pygame, sys, math
 
-from pygame.locals import(
-    K_UP,
-    K_DOWN,
-    K_LEFT,
-    K_RIGHT,
-    K_ESCAPE,
-    KEYDOWN,
-    QUIT
-)
+from pygame.locals import *
 
 import KubaGame
-from KubaGame import KubaGame, GameBoard, Player, InvalidMoveError, Queue
+from KubaGame import KubaGame
+
+################################################################################
+# Kuba Game Setup ##############################################################
+################################################################################
 
 # initialize the board to starting position
 game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
 print("Board start (below)")
 game.display_board()
 
+game.make_move('PlayerA', (0,0), 'R')
+
+################################################################################
+# Screen Setup #################################################################
+################################################################################
 
 # initialize all the modules required for PyGame
 pygame.init()
@@ -28,13 +32,11 @@ pygame.init()
 SCREEN_WIDTH = 720
 SCREEN_HEIGHT = 720
 
-# create the screen object
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-
 # tile color RGB combos
 white = (255, 255, 255)
 red = (255, 0, 0)
 black = (0, 0, 0)
+grey = (192, 192, 192)
 
 # set tile information (coordinates, color)
 tile_x = 0
@@ -42,30 +44,25 @@ tile_y = 0
 tile_color = white
 tile_width = 80
 tile_height = 80
+tile_radius = 40
 
-
-
-# create object for background image
-image = pygame.image.load(r'C:\Users\Carl\Desktop\Grease.jpg')
-
-# add this before loop to throttle the frame rate
-clock = pygame.time.Clock()
-
-
+# create the screen object
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 running = True
-
-# Main loop
+################################################################################
+# Game Loop ####################################################################
+################################################################################
 while running:
     # since the game will be a series of events, this syntax will help empty the events'
     #  queue before adding a new one
-
-    # add this in loop
-    clock.tick(600)
-
     for event in pygame.event.get():
-        # set the background to loaded image
-        screen.blit(image, (0, 0))
+
+        # fill the background with a color
+        screen.fill(grey)
+
+        # start editing the output window
+        pygame.display.set_caption("Kuba Board Game")  # set window title
 
         # did the user hit a key?
         if event.type == KEYDOWN:
@@ -73,26 +70,39 @@ while running:
             if event.key == K_ESCAPE:
                 running = False
 
+        elif event.type == MOUSEBUTTONDOWN:
+            mx, my = pygame.mouse.get_pos()
+
+
+
+            if my < 360:
+                print('top')
+            else:
+                print('bottom')
+            if mx > 360:
+                print('right')
+            else:
+                print('left')
+
         elif event.type == pygame.QUIT:
             running = False
 
-        # setup the board initially by iterating through rows and columns calling get_marble
-        x_counter = 20
-        y_counter = 20
+        # display all marbles on the board
+        x_counter = 60
+        y_counter = 60
         for row in game.get_board()[1:8]:
             for tile in row[1:8]:
-                pygame.time.wait(10)
-                if x_counter > 620:
-                    x_counter = 20
+                if x_counter > 660:
+                    x_counter = 60
 
                 if tile == 'W':
-                    pygame.draw.rect(screen, white, pygame.Rect(x_counter, y_counter, tile_width, tile_height))
+                    pygame.draw.circle(screen, white, (x_counter, y_counter), tile_radius)
 
                 if tile == 'R':
-                    pygame.draw.rect(screen, red, pygame.Rect(x_counter, y_counter, tile_width, tile_height))
+                    pygame.draw.circle(screen, red, (x_counter, y_counter), tile_radius)
 
                 if tile == 'B':
-                    pygame.draw.rect(screen, black, pygame.Rect(x_counter, y_counter, tile_width, tile_height))
+                    pygame.draw.circle(screen, black, (x_counter, y_counter), tile_radius)
 
                 # move across the board to the right for every tile
                 #  until it reaches 600, then reset to 0
@@ -101,33 +111,5 @@ while running:
             # move down the board row by row until y_counter reaches 600 then stop
             y_counter += 100
 
-        # change the color of the square by pressing space bar
-        # is_red = True
-        # if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-        #     is_red = not is_red
-        #     if is_red:
-        #         tile_color = (255, 0, 0)
-        #     else:
-        #         tile_color = (102, 0, 0)
-
-        # start editing the output window
-        pygame.display.set_caption("Kuba Board Game")       # set window title
-        # icon = pygame.image.load('game.jpg')              # set title icon
-        # pygame.display.set_icon(icon)
-
-        # pressed = pygame.key.get_pressed()
-        # if pressed[pygame.K_UP]: tile_y -= 100
-        # if pressed[pygame.K_DOWN]: tile_y += 100
-        # if pressed[pygame.K_LEFT]: tile_x -= 100
-        # if pressed[pygame.K_RIGHT]: tile_x += 100
-
-        # pygame.draw.rect(screen, tile_color, pygame.Rect(tile_x, tile_y, tile_width, tile_height))
-
-        # reset screen before drawing next rectangle
-        # screen.blit(image, (0, 0))
-
-        # PyGame is double-buffered so this swaps the buffers.
-        #  this call is required for any updates that you make
-        #  to the game screen to become visible.
+        # call to update output screen
         pygame.display.flip()
-
