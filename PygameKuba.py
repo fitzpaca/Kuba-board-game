@@ -19,7 +19,7 @@ game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
 print("Board start (below)")
 game.display_board()
 
-game.make_move('PlayerA', (0,0), 'R')
+# game.make_move('PlayerA', (0,0), 'R')
 
 ################################################################################
 # Screen Setup #################################################################
@@ -70,19 +70,23 @@ while running:
             if event.key == K_ESCAPE:
                 running = False
 
+        # currently allows left click, right click, scroll
         elif event.type == MOUSEBUTTONDOWN:
+            # store mouse click coordinates
             mx, my = pygame.mouse.get_pos()
 
+            for row in range(60, 720, 100):
+                for col in range(60, 720, 100):
+                    x_pos = row
+                    y_pos = col
 
+                    mx_sq = (mx - x_pos)**2
+                    my_sq = (my - y_pos)**2
 
-            if my < 360:
-                print('top')
-            else:
-                print('bottom')
-            if mx > 360:
-                print('right')
-            else:
-                print('left')
+                    if math.sqrt(mx_sq + my_sq) <= 40:
+                        marble_index = (int((y_pos - 60) / 100), int((x_pos - 60) / 100))
+                        print(marble_index)
+
 
         elif event.type == pygame.QUIT:
             running = False
@@ -105,7 +109,7 @@ while running:
                     pygame.draw.circle(screen, black, (x_counter, y_counter), tile_radius)
 
                 # move across the board to the right for every tile
-                #  until it reaches 600, then reset to 0
+                #  until it reaches 660, then reset to 0
                 x_counter += 100
 
             # move down the board row by row until y_counter reaches 600 then stop
