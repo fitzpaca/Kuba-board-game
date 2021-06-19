@@ -14,7 +14,7 @@ from KubaGame import KubaGame
 ################################################################################
 
 # initialize the board to starting position
-game = KubaGame(('PlayerA', 'W'), ('PlayerB', 'B'))
+game = KubaGame(('White', 'W'), ('Black', 'B'))
 print("Board start (below)")
 game.display_board()
 
@@ -31,15 +31,18 @@ tile_spacing = 5
 
 # define constants for the board width and height
 BOARD_WIDTH = (8 * tile_spacing) + (7 * 2 * tile_radius)
-BOARD_HEIGHT = (8 * tile_spacing) + (7 * 2 * tile_radius) # + (4 * tile_radius)
+BOARD_HEIGHT = (8 * tile_spacing) + (7 * 2 * tile_radius) + (4 * tile_radius)
 
 # tile color RGB combos
 white = (255, 255, 255)
 red = (255, 0, 0)
+dark_red = (150, 0, 0)
 black = (0, 0, 0)
 grey = (192, 192, 192)
 yellow = (255, 255, 51)
 blue = (0, 0, 255)
+green = (0, 255, 0)
+dark_green = (0, 150, 0)
 
 # create the board object
 board = pygame.display.set_mode((BOARD_WIDTH, BOARD_HEIGHT))
@@ -69,8 +72,25 @@ while running:
         # start editing the output window
         pygame.display.set_caption("Kuba Board Game")  # set window title
 
+        # ------------ game info section ------------------------
+        # add a white line to separate board game from info section
+        pygame.draw.rect(board, green, pygame.Rect(0, 9*tile_spacing + 7*2*tile_radius, BOARD_WIDTH, tile_spacing*4))
+
         # display current turn
-        # turn_text = pygame.display.set_mode((tile_spacing, 800))
+        myfont = pygame.font.SysFont("Comic Sans MS", int((tile_radius + tile_spacing)/1.5))
+
+        turn_label = myfont.render('Current Turn: ' + str(game.get_current_turn()), 1, black)
+        board.blit(turn_label, (tile_spacing, 13*tile_spacing + 7*2*tile_radius))
+
+        white_label = myfont.render('Reds captured by white: ' + str(game.get_captured('White')), 1, black)
+        board.blit(white_label, (tile_spacing, 23 * tile_spacing + 7 * 2 * tile_radius))
+
+        black_label = myfont.render('Reds captured by black: ' + str(game.get_captured('Black')), 1, black)
+        board.blit(black_label, (tile_spacing, 33 * tile_spacing + 7 * 2 * tile_radius))
+
+        winner_label = myfont.render('Winner: ' + str(game.get_winner()), 1, black)
+        board.blit(winner_label, (tile_spacing, 43 * tile_spacing + 7 * 2 * tile_radius))
+        # -----------------------------------
 
         # display all marbles on the board
         x_counter = tile_radius + tile_spacing
@@ -124,7 +144,7 @@ while running:
                     # if the user clicks on a valid marble position and there is a white marble in it
                     if math.sqrt(mx_sq + my_sq) <= tile_radius\
                             and board.get_at((mx, my)) == white\
-                            and game.get_current_turn() != 'PlayerB':
+                            and game.get_current_turn() != 'Black':
                         # update the marble index
                         marble_index = (int((y_pos - (tile_radius + tile_spacing)) / (2 * tile_radius + tile_spacing)),
                                         int((x_pos - (tile_radius + tile_spacing)) / (2 * tile_radius + tile_spacing)))
@@ -140,7 +160,7 @@ while running:
                     #  and it is their turn
                     elif math.sqrt(mx_sq + my_sq) <= tile_radius\
                             and board.get_at((mx, my)) == black\
-                            and game.get_current_turn() != 'PlayerA':
+                            and game.get_current_turn() != 'White':
                         # update the marble index
                         marble_index = (int((y_pos - (tile_radius + tile_spacing)) / (2 * tile_radius + tile_spacing)),
                                         int((x_pos - (tile_radius + tile_spacing)) / (2 * tile_radius + tile_spacing)))
@@ -166,9 +186,9 @@ while running:
                 direction = 'R'
 
             # attempt to make a move
-            if game.make_move('PlayerB', marble_index, direction):
+            if game.make_move('Black', marble_index, direction):
                 marble_select = False              # erase the selection circle
-            if game.make_move('PlayerA', marble_index, direction):
+            if game.make_move('White', marble_index, direction):
                 marble_select = False              # erase the selection circle
 
 
