@@ -190,11 +190,17 @@ while running:
             running = False
 
         if game.get_winner() is not None:
+            marble_select = False
             # show a giant winner's rectangle
+            pygame.draw.rect(board, white,
+                             pygame.Rect(tile_spacing * 2,
+                                         7 * tile_radius + 4 * tile_spacing,
+                                         BOARD_WIDTH - 4 * tile_spacing,
+                                         tile_spacing * 4 + tile_radius * 2))
             win_font = pygame.font.SysFont("Comic Sans MS", int((tile_radius + tile_spacing)*2))
 
-            winner_overlay = win_font.render(str(game.get_winner()) + ' won!', 1, dark_green)
-            board.blit(winner_overlay, (tile_spacing, BOARD_HEIGHT/2))
+            winner_overlay = win_font.render(str(game.get_winner()) + ' wins!!', 1, dark_green)
+            board.blit(winner_overlay, (tile_radius + tile_spacing, 6.5 * tile_radius + 5 * tile_spacing))
 
 
             #pygame.time.wait(5000)
