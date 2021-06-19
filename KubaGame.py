@@ -143,10 +143,10 @@ class KubaGame:
         Parameters: N/A
         Returns: True or False
         """
-        if self._player1.get_captured() == 7:
+        if self._player1.get_captured() == 1:
             self.set_winner(self._player1.get_name())
 
-        if self._player2.get_captured() == 7:
+        if self._player2.get_captured() == 1:
             self.set_winner(self._player2.get_name())
 
         # if player 1 has no marbles on the board, player 2 wins

@@ -15,8 +15,6 @@ from KubaGame import KubaGame
 
 # initialize the board to starting position
 game = KubaGame(('White', 'W'), ('Black', 'B'))
-print("Board start (below)")
-game.display_board()
 
 ################################################################################
 # Board Setup #################################################################
@@ -74,7 +72,7 @@ while running:
 
         # ------------ game info section ------------------------
         # add a white line to separate board game from info section
-        pygame.draw.rect(board, green, pygame.Rect(0, 9*tile_spacing + 7*2*tile_radius, BOARD_WIDTH, tile_spacing*4))
+        pygame.draw.rect(board, dark_green, pygame.Rect(0, 9*tile_spacing + 7*2*tile_radius, BOARD_WIDTH, tile_spacing*4))
 
         # display current turn
         myfont = pygame.font.SysFont("Comic Sans MS", int((tile_radius + tile_spacing)/1.5))
@@ -148,11 +146,9 @@ while running:
                         # update the marble index
                         marble_index = (int((y_pos - (tile_radius + tile_spacing)) / (2 * tile_radius + tile_spacing)),
                                         int((x_pos - (tile_radius + tile_spacing)) / (2 * tile_radius + tile_spacing)))
-                        print(marble_index)
                         marble_select = True
                         marble_color = white
                         select_pos = (x_pos, y_pos)
-                        print('W')
 
 
                     # if the user clicks on a valid marble position
@@ -164,11 +160,9 @@ while running:
                         # update the marble index
                         marble_index = (int((y_pos - (tile_radius + tile_spacing)) / (2 * tile_radius + tile_spacing)),
                                         int((x_pos - (tile_radius + tile_spacing)) / (2 * tile_radius + tile_spacing)))
-                        print(marble_index)
                         marble_select = True
                         marble_color = black
                         select_pos = (x_pos, y_pos)
-                        print('B')
 
         # did the user hit a key?
         elif event.type == KEYDOWN:
@@ -192,16 +186,19 @@ while running:
                 marble_select = False              # erase the selection circle
 
 
-
-
-
-        # if an arrow key was pressed after a valid selection was made, make a move
-
-        # reset the make move indicator so that it does not repeat
-
-
         elif event.type == pygame.QUIT:
             running = False
+
+        if game.get_winner() is not None:
+            # show a giant winner's rectangle
+            win_font = pygame.font.SysFont("Comic Sans MS", int((tile_radius + tile_spacing)*2))
+
+            winner_overlay = win_font.render(str(game.get_winner()) + ' won!', 1, dark_green)
+            board.blit(winner_overlay, (tile_spacing, BOARD_HEIGHT/2))
+
+
+            #pygame.time.wait(5000)
+            #running = False
 
         # call to update output board
         pygame.display.flip()
