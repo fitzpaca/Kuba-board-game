@@ -1,4 +1,4 @@
-# Kuba -- A marbles board game simulator
+# Kuba -- a marbles board game simulator
 
 ## Game start:
 - Either player pushes one of their respective marbles. Then the other player pushes one of their respective marbles. Turns alternate.
@@ -13,7 +13,14 @@
 - No undoing the opposing player's turn by pushing the marbles back into the EXACT same position they were in previously.
 
 # In game content:
-![image](https://user-images.githubusercontent.com/77037291/155821282-10c3cd95-8270-4b60-ab1c-dfa11bdcb94d.png)
+## Start game demo gif
+<img src="https://media.giphy.com/media/T3YrFrDqvQIx26JoUt/giphy.gif" width="600"/>
+
+## Mid game screenshot
+<img src="https://user-images.githubusercontent.com/77037291/155863726-a82669ad-afb3-4053-b214-97b4fc95c1bc.png" alt="drawing" width="600"/>
+
+## End game demo gif
+<img src="https://media.giphy.com/media/y1o5msRxe0J3kJn94n/giphy.gif" width="600"/>
 
 ## Notes:
 Official rules explained [here](https://sites.google.com/site/boardandpieces/list-of-games/kuba).
